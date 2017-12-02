@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.yjt.wallet.ui.activity.MainActivity">
+
+    <Button
+        android:id="@+id/btnRegist"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="5dp"
+        android:text="注册"/>
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="5dp"
+        android:text="登陆"/>
+
+    <Button
+        android:id="@+id/generateWallet"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="5dp"
+        android:text="生成钱包"/>
+
+    <Button
+        android:id="@+id/scanIntegral"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="5dp"
+        android:text="扫码获取积分"/>
+
+    <Button
+        android:id="@+id/transferIntegral"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="5dp"
+        android:text="积分转帐"/>
+
+    <Button
+        android:id="@+id/queryIntegral"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="5dp"
+        android:text="积分查询"/>
+
+</LinearLayout>

@@ -1,0 +1,1 @@
+include ':app', ':Wallet_Base', ':Wallet_Core', ':Wallet_Components', ':Wallet_ECC'

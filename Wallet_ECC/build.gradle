@@ -1,0 +1,14 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps.spongycastle_core
+    implementation deps.spongycastle_prov
+    implementation deps.spongycastle_pg
+    implementation deps.spongycastle_pkix
+    implementation deps.spongycastle_bcpg_jdk15on
+    implementation deps.spongycastle_bcpkix_jdk15on
+    implementation deps.spongycastle_bctls_jdk15on
+//    implementation deps.ethereumj_core
+//    implementation deps.solcJ_all
+}

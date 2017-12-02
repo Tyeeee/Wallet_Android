@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Wallet_Android</string>
+
+    <string name="dialog_prompt_wallet">为了保护您的比特币\n\n&#042;&#160;&#160;请不要卸载钱包\n\n&#042;&#160;&#160;不要清除钱包数据\n\n&#042;&#160;&#160;请牢记您的密码</string>
+
+    <string name="dialog_prompt">提示</string>
+    <string name="dialog_prompt_setting">设置</string>
+    <string name="dialog_prompt_cancel">取消</string>
+    <string name="dialog_prompt_confirm">确定</string>
+    <string name="dialog_prompt_known">知道了</string>
+    <string name="dialog_prompt_net_work_error">网络不可用,请先设置网络!</string>
+    <string name="dialog_prompt_permission_error">我们需要的一些权限被您拒绝或者系统发生错误申请失败，请您到设置页面手动授权，否则功能无法正常使用！</string>
+</resources>

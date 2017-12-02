@@ -1,0 +1,12 @@
+<resources>
+
+    <declare-styleable name="FragmentDialog">
+        <attr name="fd_textPrimaryColor" format="color|reference"/>
+        <attr name="fd_textSecondaryColor" format="color|reference"/>
+        <attr name="fd_dividerColor" format="color|reference"/>
+        <attr name="fd_pressedColor" format="color|reference"/>
+        <attr name="fd_buttonBackground" format="reference"/>
+        <attr name="fd_listSelector" format="reference"/>
+    </declare-styleable>
+
+</resources>

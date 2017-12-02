@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="BottomNavigationView">
+        <item name="barElevation">@dimen/dp_8</item>
+        <item name="itemBackground">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Widget.MaterialProgressBar.ProgressBar.Horizontal"
+           parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:indeterminateDrawable">@null</item>
+        <item name="android:minHeight">@dimen/dp_2</item>
+        <item name="android:maxHeight">@dimen/dp_2</item>
+    </style>
+
+</resources>

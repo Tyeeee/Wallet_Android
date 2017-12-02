@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TabLayout">
+        <attr name="tl_indicatorAlwaysInCenter" format="boolean"/>
+        <attr name="tl_indicatorWithoutPadding" format="boolean"/>
+        <attr name="tl_indicatorInFront" format="boolean"/>
+        <attr name="tl_indicatorInterpolation" format="enum">
+            <enum name="smart" value="0"/>
+            <enum name="linear" value="1"/>
+        </attr>
+        <attr name="tl_indicatorGravity" format="enum">
+            <enum name="bottom" value="0"/>
+            <enum name="top" value="1"/>
+            <enum name="center" value="2"/>
+        </attr>
+        <attr name="tl_indicatorColor" format="color"/>
+        <attr name="tl_indicatorColors" format="reference"/>
+        <attr name="tl_indicatorThickness" format="dimension"/>
+        <attr name="tl_indicatorWidth" format="dimension">
+            <enum name="auto" value="-1"/>
+        </attr>
+        <attr name="tl_indicatorCornerRadius" format="dimension"/>
+        <attr name="tl_overlineColor" format="color"/>
+        <attr name="tl_overlineThickness" format="dimension"/>
+        <attr name="tl_underlineColor" format="color"/>
+        <attr name="tl_underlineThickness" format="dimension"/>
+        <attr name="tl_dividerColor" format="color"/>
+        <attr name="tl_dividerColors" format="reference"/>
+        <attr name="tl_dividerThickness" format="dimension"/>
+        <attr name="tl_defaultTabBackground" format="reference"/>
+        <attr name="tl_defaultTabTextAllCaps" format="boolean"/>
+        <attr name="tl_defaultTabTextColor" format="color|reference"/>
+        <attr name="tl_defaultTabTextSize" format="dimension"/>
+        <attr name="tl_defaultTabTextHorizontalPadding" format="dimension"/>
+        <attr name="tl_defaultTabTextMinWidth" format="dimension"/>
+        <attr name="tl_customTabTextLayoutId" format="reference"/>
+        <attr name="tl_customTabTextViewId" format="reference"/>
+        <attr name="tl_distributeEvenly" format="boolean"/>
+        <attr name="tl_clickable" format="boolean"/>
+        <attr name="tl_titleOffset" format="dimension">
+            <enum name="auto_center" value="-1"/>
+        </attr>
+        <attr name="tl_drawDecorationAfterTab" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="PanelLayout">
+        <attr name="panel_height" format="dimension"/>
+        <attr name="shadow_height" format="dimension"/>
+        <attr name="parallax_offset" format="dimension"/>
+        <attr name="fade_color" format="color"/>
+        <attr name="fling_velocity" format="integer"/>
+        <attr name="drag_view" format="reference"/>
+        <attr name="scrollable_view" format="reference"/>
+        <attr name="overlay" format="boolean"/>
+        <attr name="clip_panel" format="boolean"/>
+        <attr name="anchor_point" format="float"/>
+        <attr name="initial_state" format="enum">
+            <enum name="expanded" value="0"/>
+            <enum name="collapsed" value="1"/>
+            <enum name="anchored" value="2"/>
+            <enum name="hidden" value="3"/>
+        </attr>
+        <attr name="scroll_interpolator" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="BottomNavigationView">
+        <attr name="menu" format="reference"/>
+        <attr name="switchMode" format="enum">
+            <enum name="scale" value="0"/>
+            <enum name="shift" value="1"/>
+            <enum name="still" value="2"/>
+        </attr>
+        <attr name="barElevation" format="dimension"/>
+        <attr name="itemBackground" format="reference"/>
+        <attr name="selectedColor" format="color"/>
+        <attr name="unSelectedColor" format="color"/>
+
+        <attr name="fragmentContainerId" format="reference"/>
+        <attr name="viewpagerId" format="reference"/>
+        <attr name="isSlide" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="DropDownMenu">
+        <attr name="underlineColor" format="color"/>
+        <attr name="dividerColor" format="color"/>
+        <attr name="textSelectedColor" format="color"/>
+        <attr name="textUnselectedColor" format="color"/>
+        <attr name="menuBackgroundColor" format="color"/>
+        <attr name="maskColor" format="color"/>
+        <attr name="menuTextSize" format="dimension"/>
+        <attr name="menuSelectedIcon" format="reference"/>
+        <attr name="menuUnselectedIcon" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="DownloadProgressBar">
+        <attr name="circleRadius" format="dimension"/>
+        <attr name="strokeWidth" format="dimension"/>
+        <attr name="lineWidth" format="dimension"/>
+        <attr name="progressDuration" format="integer"/>
+        <attr name="resultDuration" format="integer"/>
+        <attr name="progressBackgroundColor" format="color"/>
+        <attr name="drawingColor" format="color"/>
+        <attr name="progressColor" format="color"/>
+        <attr name="circleBackgroundColor" format="color"/>
+        <attr name="overshootValue" format="float"/>
+    </declare-styleable>
+
+</resources>

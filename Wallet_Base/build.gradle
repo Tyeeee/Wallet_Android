@@ -1,0 +1,44 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        testInstrumentationRunner rootProject.ext.testInstrumentationRunner
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField 'String', 'SERVICE_URL_95', '"http://192.168.2.95/MchMergepay/Api/ClientApp"'
+            buildConfigField 'String', 'SERVICE_URL_104', '"http://demo.mch.heemoney.com/Api/ClientApp"'
+            buildConfigField 'String', 'SERVICE_URL_105', '"https://merch.heemoney.com/Api/ClientApp"'
+            buildConfigField 'String', 'AES_DECRYPT_KEY', '"7E7B619F1E6EA64D33361E94D656EB61"'
+            minifyEnabled false
+        }
+        release {
+            buildConfigField 'String', 'SERVICE_URL_95', '"http://192.168.2.95/MchMergepay/Api/ClientApp"'
+            buildConfigField 'String', 'SERVICE_URL_104', '"http://demo.mch.heemoney.com/Api/ClientApp"'
+            buildConfigField 'String', 'SERVICE_URL_105', '"https://merch.heemoney.com/Api/ClientApp"'
+            buildConfigField 'String', 'AES_DECRYPT_KEY', '"7E7B619F1E6EA64D33361E94D656EB61"'
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+//        textReport true
+//        textOutput 'stdout'
+//        abortOnError true
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation deps.junit
+    androidTestImplementation deps.runner
+    androidTestImplementation deps.espresso_core
+    api deps.multidex
+    api project(':Wallet_Components')
+}

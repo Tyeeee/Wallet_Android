@@ -1,0 +1,6 @@
+<resources>
+    <string name="permission_prompt_permission">请检查应用所需权限是否全部接受</string>
+    <string name="permission_watch">查看</string>
+    <string name="http_error_prompt1">请检查网络是否可用</string>
+    <string name="action_sheet_cancel">取消</string>
+</resources>

@@ -1,0 +1,401 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--<item name="colorPrimary">@android:color/transparent</item>-->
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="colorAccent">@color/color_999999</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:windowBackground">@color/color_efeff4</item>
+
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar" tools:ignore="NewApi">false</item>
+        <item name="android:statusBarColor" tools:ignore="NewApi">@color/color_2a2c40</item>
+    </style>
+
+    <style name="MainActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--<item name="colorPrimary">@android:color/transparent</item>-->
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="colorAccent">@color/color_999999</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:windowBackground">@color/color_efeff4</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar" tools:ignore="NewApi">false</item>
+        <item name="android:statusBarColor" tools:ignore="NewApi">@color/color_2a2c40</item>
+    </style>
+
+    <!-- 箭头 -->
+    <style name="DrawerArrowAnimation" parent="AppTheme">
+        <item name="drawerArrowStyle">@style/DrawerArrowToggle</item>
+    </style>
+    <!-- 箭头颜色 -->
+    <style name="DrawerArrowToggle" parent="Base.Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@android:color/white</item>
+    </style>
+
+    <style name="Bottom_Dialog" parent="android:Theme.Light"/>
+
+    <style name="Light_Dialog" parent="android:Theme.Light" />
+
+    <style name="Dark_Dialog" parent="android:Theme" />
+
+    <style name="Bottom_Dialog.Appearance">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+        <item name="android:listChoiceIndicatorSingle" tools:ignore="PrivateResource">
+            @drawable/abc_btn_radio_material
+        </item>
+        <item name="android:listChoiceIndicatorMultiple" tools:ignore="PrivateResource">
+            @drawable/abc_btn_check_material
+        </item>
+        <item name="android:colorAccent" tools:targetApi="lollipop">?colorAccent</item>
+        <item name="android:colorPrimary" tools:targetApi="lollipop">?colorPrimary</item>
+        <item name="fd_buttonBackground">@drawable/selector_dialog_button</item>
+        <item name="fd_textPrimaryColor">@color/color_DE000000</item>
+        <item name="fd_textSecondaryColor">@color/color_8A000000</item>
+        <item name="fd_dividerColor">@color/color_1F000000</item>
+        <item name="fd_pressedColor">@color/color_29000000</item>
+        <item name="fd_listSelector">@drawable/selector_dialog_list</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFullscreen">true</item>
+        <!--<item name="android:windowIsTranslucent">true</item>-->
+        <!--<item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>-->
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="Light_Dialog.Appearance">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:listChoiceIndicatorSingle" tools:ignore="PrivateResource">
+            @drawable/abc_btn_radio_material
+        </item>
+        <item name="android:listChoiceIndicatorMultiple" tools:ignore="PrivateResource">
+            @drawable/abc_btn_check_material
+        </item>
+        <item name="android:colorAccent" tools:targetApi="lollipop">?colorAccent</item>
+        <item name="android:colorPrimary" tools:targetApi="lollipop">?colorPrimary</item>
+        <item name="fd_buttonBackground">@drawable/selector_dialog_button</item>
+        <item name="fd_textPrimaryColor">@color/color_DE000000</item>
+        <item name="fd_textSecondaryColor">@color/color_8A000000</item>
+        <item name="fd_dividerColor">@color/color_1F000000</item>
+        <item name="fd_pressedColor">@color/color_29000000</item>
+        <item name="fd_listSelector">@drawable/selector_dialog_list</item>
+        <item name="android:windowBackground">@drawable/dialog_light</item>
+    </style>
+
+    <style name="Dark_Dialog.Appearance">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:listChoiceIndicatorSingle" tools:ignore="PrivateResource">
+            @drawable/abc_btn_radio_material
+        </item>
+        <item name="android:listChoiceIndicatorMultiple" tools:ignore="PrivateResource">
+            @drawable/abc_btn_check_material
+        </item>
+        <item name="android:colorAccent" tools:targetApi="lollipop">?colorAccent</item>
+        <item name="android:colorPrimary" tools:targetApi="lollipop">?colorPrimary</item>
+        <item name="fd_buttonBackground">@drawable/selector_dialog_button</item>
+        <item name="fd_textPrimaryColor">@android:color/white</item>
+        <item name="fd_listSelector">@drawable/selector_dialog_list</item>
+        <item name="fd_textSecondaryColor">@color/color_B3FFFFFF</item>
+        <item name="fd_dividerColor">@color/color_1FFFFFFF</item>
+        <item name="fd_pressedColor">@color/color_29FFFFFF</item>
+        <item name="android:windowBackground">@drawable/dialog_dark</item>
+    </style>
+
+    <style name="Light_Dialog.Layout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Light_Dialog.Layout.Content">
+        <item name="android:layout_height">@dimen/dp_0</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="Light_Dialog.Layout.Custom">
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Light_Dialog.Layout.Buttons">
+        <item name="android:layout_height">@dimen/dp_48</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingLeft">@dimen/dp_8</item>
+        <item name="android:paddingRight">@dimen/dp_8</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="Light_Dialog.Layout.Buttons.Right">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:paddingLeft">@dimen/dp_0</item>
+        <item name="android:paddingRight">@dimen/dp_0</item>
+    </style>
+
+    <style name="Light_Dialog.Layout.Buttons.Stacked">
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/dp_0</item>
+        <item name="android:paddingRight">@dimen/dp_0</item>
+    </style>
+
+    <style name="Light_Dialog.Button">
+        <item name="android:background">?attr/fd_buttonBackground</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:minWidth">@dimen/dp_64</item>
+        <item name="android:layout_height">@dimen/dp_36</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingRight">@dimen/dp_8</item>
+        <item name="android:paddingLeft">@dimen/dp_8</item>
+        <item name="android:layout_marginRight">@dimen/dp_4</item>
+        <item name="android:layout_marginLeft">@dimen/dp_4</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">?colorAccent</item>
+    </style>
+
+    <style name="Light_Dialog.Button.Neutral" parent="@style/Light_Dialog.Button">
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="Light_Dialog.Button.Stacked">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp_48</item>
+        <item name="android:gravity">center_vertical|end</item>
+        <item name="android:paddingRight">@dimen/dp_32</item>
+        <item name="android:paddingLeft">@dimen/dp_32</item>
+        <item name="android:layout_marginRight">@dimen/dp_0</item>
+        <item name="android:layout_marginLeft">@dimen/dp_0</item>
+    </style>
+
+    <style name="Light_Dialog.Expander">
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_height">@dimen/dp_0</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="Light_Dialog.Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp_1</item>
+        <item name="android:background">?attr/fd_dividerColor</item>
+    </style>
+
+    <style name="Light_Dialog.Space">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="Light_Dialog.Space.ButtonsBottom">
+        <item name="android:layout_height">@dimen/dp_8</item>
+    </style>
+
+    <style name="Light_Dialog.Progress1">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Light_Dialog.Progress2" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminateTint" tools:ignore="NewApi">@android:color/darker_gray</item>
+        <item name="android:indeterminateTintMode" tools:ignore="NewApi">src_atop</item>
+        <item name="android:layout_marginRight">@dimen/dp_4</item>
+        <item name="android:layout_marginLeft">@dimen/dp_16</item>
+        <item name="android:layout_marginTop">@dimen/dp_16</item>
+        <item name="android:layout_marginBottom">@dimen/dp_16</item>
+    </style>
+
+    <style name="Light_Dialog.Progress3">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Light_Dialog.ScrollView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+
+    <style name="Light_Dialog.TextView" parent="@android:style/Widget.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Light_Dialog.TextView.Title">
+        <item name="android:textSize">@dimen/sp_20</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">?attr/fd_textPrimaryColor</item>
+    </style>
+
+    <style name="Light_Dialog.TextView.Message">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:gravity">center_horizontal|left</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">?attr/fd_textSecondaryColor</item>
+    </style>
+
+    <style name="Light_Dialog.TextView.Message.Image">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_width">@dimen/dp_140</item>
+        <item name="android:layout_height">@dimen/dp_82</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <style name="Light_Dialog.TextView.Message.Progress2.Image">
+        <item name="android:layout_width">@dimen/dp_52</item>
+        <item name="android:layout_height">@dimen/dp_52</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <style name="Light_Dialog.TextView.Message.Progress1">
+        <item name="android:padding">@dimen/dp_10</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/sp_15</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="Light_Dialog.TextView.Message.Progress2">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">@dimen/sp_20</item>
+        <item name="android:textColor">?attr/fd_textSecondaryColor</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="Light_Dialog.ListView">
+        <item name="android:layout_width">@dimen/dp_0</item>
+        <item name="android:layout_weight">1</item>
+        <!--<item name="android:layout_width">match_parent</item>-->
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:divider">@null</item>
+        <item name="android:scrollbars">none</item>
+        <item name="android:dividerHeight">@dimen/dp_0</item>
+        <!--<item name="android:listSelector">@android:color/transparent</item>-->
+        <item name="android:listSelector">?attr/fd_listSelector</item>
+    </style>
+
+    <style name="Light_Dialog.ListItemControl">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:minHeight">@dimen/dp_52</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/dp_24</item>
+        <item name="android:paddingRight">@dimen/dp_0</item>
+    </style>
+
+    <style name="Light_Dialog.RadioButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/dp_24</item>
+        <item name="android:paddingRight">@dimen/dp_0</item>
+    </style>
+
+    <style name="Light_Dialog.ListItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:descendantFocusability">blocksDescendants</item>
+        <item name="android:paddingLeft">@dimen/dp_24</item>
+        <item name="android:paddingRight">@dimen/dp_24</item>
+    </style>
+
+    <style name="Light_Dialog.TextView.ListItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/dp_52</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?attr/fd_textPrimaryColor</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/dp_24</item>
+        <item name="android:paddingRight">@dimen/dp_24</item>
+    </style>
+
+    <style name="Light_Dialog.TextView.Choice">
+        <item name="android:minHeight">@dimen/dp_52</item>
+        <item name="android:textSize">@dimen/sp_16</item>
+        <item name="android:textColor">?attr/fd_textPrimaryColor</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">@dimen/dp_24</item>
+    </style>
+
+    <style name="Light_Dialog.DatePicker">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:spinnersShown">true</item>
+        <item name="android:calendarViewShown">false</item>
+    </style>
+
+    <style name="Light_Dialog.NumberPicker">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:spinnersShown">true</item>
+        <item name="android:calendarViewShown">false</item>
+    </style>
+
+    <style name="Light_Dialog.EditText">
+        <item name="android:contentDescription">@null</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:paddingLeft">@dimen/dp_10</item>
+        <item name="android:paddingRight">@dimen/dp_10</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@null</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:textSize">@dimen/sp_15</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+</resources>

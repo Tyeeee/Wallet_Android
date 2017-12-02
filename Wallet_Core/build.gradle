@@ -1,0 +1,60 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        testInstrumentationRunner rootProject.ext.testInstrumentationRunner
+
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['src/main/java']
+            resources.srcDirs = ['src/main/resources']
+            aidl.srcDirs = ['src/main/aidl']
+            renderscript.srcDirs = ['src/maom']
+            res.srcDirs = ['src/main/res']
+            assets.srcDirs = ['src/main/assets']
+        }
+        instrumentTest.setRoot('androidTest')
+        debug.setRoot('build-types/debug') 
+        release.setRoot('build-types/release')
+    }
+    lintOptions {
+//        textReport true
+//        textOutput 'stdout'
+//        abortOnError true
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation deps.junit
+    androidTestImplementation deps.runner
+    androidTestImplementation deps.espresso_core
+    implementation deps.slf4j
+    api deps.guava
+    api deps.annotation_java5
+    api deps.jsr305
+    api deps.scrypt
+    api project(':Wallet_Components')
+//    api project(':Wallet_ECC')
+    compile 'org.apache.httpcomponents:httpclient:4.5@jar'
+    compile 'org.apache.httpcomponents:httpmime:4.1@jar'
+    compile 'org.apache.httpcomponents:httpcore:4.4.1@jar'
+    compile 'org.apache.james:apache-mime4j-core:0.7.1@jar'
+}

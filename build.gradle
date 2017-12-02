@@ -1,0 +1,94 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+        google()
+        mavenCentral()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    minSdkVersion = 19
+    targetSdkVersion = 27
+    compileSdkVersion = 27
+    buildToolsVersion = "27.0.1"
+    testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunne"
+    sourceCompatibilityVersion = JavaVersion.VERSION_1_8
+    targetCompatibilityVersion = JavaVersion.VERSION_1_8
+}
+ext.deps = [
+        appcompat_v4               : 'com.android.support:support-v4:27.0.0',
+        appcompat_v7               : 'com.android.support:appcompat-v7:27.0.0',
+        constraint_layout          : 'com.android.support.constraint:constraint-layout:1.0.2',
+        design                     : 'com.android.support:design:27.0.0',
+        junit                      : 'junit:junit:4.12',
+        runner                     : 'com.android.support.test:runner:1.0.1',
+        espresso_core              : 'com.android.support.test.espresso:espresso-core:3.0.1',
+        multidex                   : 'com.android.support:multidex:1.0.2',
+        kotlin_stdlib_jre7         : 'org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.51',
+        annotation_java5           : 'org.jetbrains:annotations-java5:15.0',
+        zxing                      : 'com.google.zxing:core:3.3.0',
+        getui                      : 'com.getui:sdk:2.10.2.0',
+        gson                       : 'com.google.code.gson:gson:2.8.0',
+        glide                      : 'com.github.bumptech.glide:glide:3.7.0',
+//        glide                : 'com.github.bumptech.glide:glide:4.0.0',
+        //        glide_compiler       : 'com.github.bumptech.glide:compiler:4.0.0',
+        guava                      : 'com.google.guava:guava:20.0',
+        jsr305                     : 'com.google.code.findbugs:jsr305:3.0.2@jar',
+        scrypt                     : 'com.lambdaworks:scrypt:1.4.0@jar',
+        fastjson                   : 'com.alibaba:fastjson:1.2.31',
+        okhttp3                    : 'com.squareup.okhttp3:okhttp:3.7.0',
+        okio                       : 'com.squareup.okio:okio:1.12.0',
+        slf4j                      : 'org.slf4j:slf4j-api:1.7.20',
+        spongycastle_core          : 'com.madgag.spongycastle:core:1.58.0.0',
+        spongycastle_prov          : 'com.madgag.spongycastle:prov:1.58.0.0',
+        spongycastle_pg            : 'com.madgag.spongycastle:pg:1.54.0.0',
+        spongycastle_pkix          : 'com.madgag.spongycastle:pkix:1.54.0.0',
+        spongycastle_bcpg_jdk15on  : 'com.madgag.spongycastle:bcpg-jdk15on:1.58.0.0',
+        spongycastle_bcpkix_jdk15on: 'com.madgag.spongycastle:bcpkix-jdk15on:1.58.0.0',
+        spongycastle_bctls_jdk15on : 'com.madgag.spongycastle:bctls-jdk15on:1.58.0.0',
+//        ethereumj_core             : "org.ethereum:ethereumj-core:1.6.3-RELEASE",
+//        solcJ_all                  : "org.ethereum:solcJ-all:0.4.8",
+        JsBridge                   : 'com.yjt.bridge:JsBridge:0.0.2',
+        NumericKeyboard            : 'com.yjt.keyboard:NumericKeyboard:0.0.1',
+        Password                   : 'com.yjt.password:Password:0.0.2',
+
+//        transitionseverywhere: "com.andkulikov:transitionseverywhere:1.7.4",
+//        zip4j                : 'net.lingala.zip4j:zip4j:1.3.2',
+//        eventbus             : 'org.greenrobot:eventbus:3.0.0',
+//        objectbox            : 'io.objectbox:objectbox-android:1.1.0',
+//        objectbox_processor  : 'io.objectbox:objectbox-processor:1.1.0'
+//        bugly                : 'com.tencent.bugly:crashreport:latest.release'
+//        walle                : 'com.meituan.android.walle:library:1.1.5'
+//        lifecycle            : "android.arch.lifecycle:runtime:1.0.0-alpha3",
+//        lifecycle_extensions : "android.arch.lifecycle:extensions:1.0.0-alpha3",
+//        lifecycle_compiler   : "android.arch.lifecycle:compiler:1.0.0-alpha3"
+//        room                 : "android.arch.persistence.room:runtime:1.0.0-alpha3",
+//        room_compiler        : "android.arch.persistence.room:compiler:1.0.0-alpha3",
+//        room_testing         : "android.arch.persistence.room:testing:1.0.0-alpha3"
+//        Router           : 'com.yjt.apt:Router:0.0.5',
+//        Router_Annotation: 'com.yjt.apt:Router_Annotation:0.0.5',
+//        Router_Compiler  : 'com.yjt.apt:Router_Compiler:0.0.5'
+]
+

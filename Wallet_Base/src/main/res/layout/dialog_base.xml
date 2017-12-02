@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Light_Dialog.Layout">
+
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        style="@style/Light_Dialog.TextView.Title" />
+
+    <LinearLayout style="@style/Light_Dialog.Layout.Content">
+
+        <ScrollView
+            android:id="@+id/svDialogContent"
+            style="@style/Light_Dialog.ScrollView">
+
+            <TextView
+                android:id="@+id/tvDialogMessage"
+                style="@style/Light_Dialog.TextView.Message" />
+
+        </ScrollView>
+
+        <FrameLayout
+            android:id="@+id/flDialogCustom"
+            style="@style/Light_Dialog.Layout.Custom" />
+
+        <LinearLayout
+            android:id="@+id/llDialogListDismiss"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="@dimen/dp_0"
+                android:layout_weight="1" />
+
+            <ListView
+                android:id="@+id/lvDialogContent"
+                style="@style/Light_Dialog.ListView"
+                android:background="@drawable/dialog_listview"
+                android:paddingLeft="@dimen/dp_1"
+                android:paddingTop="@dimen/dp_1" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/vDialogDivider"
+        style="@style/Light_Dialog.Divider" />
+
+    <RelativeLayout
+        android:id="@+id/rlDialogLayoutButtons"
+        style="@style/Light_Dialog.Layout.Buttons">
+
+        <Button
+            android:id="@+id/btnDialogNeutral"
+            style="@style/Light_Dialog.Button.Neutral" />
+
+        <LinearLayout
+            android:id="@+id/llDialogLayoutButtonsRight"
+            style="@style/Light_Dialog.Layout.Buttons.Right">
+
+            <Button
+                android:id="@+id/btnDialogNegative"
+                style="@style/Light_Dialog.Button" />
+
+            <Button
+                android:id="@+id/btnDialogPositive"
+                style="@style/Light_Dialog.Button" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/llDialogLayoutButtonsStacked"
+        style="@style/Light_Dialog.Layout.Buttons.Stacked">
+
+        <Button
+            android:id="@+id/btnDialogButtonPositiveStacked"
+            style="@style/Light_Dialog.Button.Stacked" />
+
+        <Button
+            android:id="@+id/btnDialogButtonNegativestacked"
+            style="@style/Light_Dialog.Button.Stacked" />
+
+        <Button
+            android:id="@+id/btnDialogButtonNeutralStacked"
+            style="@style/Light_Dialog.Button.Stacked" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/vDialogButtonsBottomSpace"
+        style="@style/Light_Dialog.Space.ButtonsBottom" />
+</LinearLayout>
