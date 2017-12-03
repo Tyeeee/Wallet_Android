@@ -1,8 +1,5 @@
 package com.yjt.wallet.ecc;
 
-import org.spongycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.spongycastle.asn1.x9.X9ObjectIdentifiers;
-import org.spongycastle.crypto.util.PublicKeyFactory;
 import org.spongycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.spongycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -48,6 +45,7 @@ public class ECKeyPair {
     public static ECKeyPair createECKeyPair() throws NoSuchProviderException, NoSuchAlgorithmException,
             InvalidAlgorithmParameterException {
         //Add bouncy castle as key pair gen provider
+//        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(),1);
         Security.addProvider(new BouncyCastleProvider());
         //Generate key pair
         KeyPairGenerator   keyPairGenerator   = KeyPairGenerator.getInstance("ECDSA", "BC");

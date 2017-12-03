@@ -63,6 +63,8 @@ public class ECCTestActivity extends ActivityViewImplement<ECCTestContract.Prese
             //Get secp256k1 pair - which we can use for both addresses
             ECKeyPair keyPair = ECKeyPair.createECKeyPair();
             EthAddressGen.genEthereumAddress(keyPair.getPublicKey());
+            LogUtil.getInstance().print(String.format("Private Key: %", keyPair.getPrivateKey()));
+            LogUtil.getInstance().print(String.format("Public Key: %", keyPair.getPublicKey()));
             tvPrivateKey.setText(String.format("Private Key: %", keyPair.getPrivateKey()));
             tvPrivateKey.setText(String.format("Public Key: %", keyPair.getPublicKey()));
         } catch (NoSuchProviderException | InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
