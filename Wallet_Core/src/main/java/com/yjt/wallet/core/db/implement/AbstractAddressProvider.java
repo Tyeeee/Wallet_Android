@@ -17,20 +17,19 @@
 package com.yjt.wallet.core.db.implement;
 
 import com.google.common.base.Function;
-
-import net.bither.bitherj.core.Address;
-import net.bither.bitherj.core.HDMAddress;
-import net.bither.bitherj.core.HDMBId;
-import net.bither.bitherj.core.HDMKeychain;
-import net.bither.bitherj.crypto.EncryptedData;
-import net.bither.bitherj.crypto.PasswordSeed;
-import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.db.IAddressProvider;
-import net.bither.bitherj.db.imp.base.ICursor;
-import net.bither.bitherj.db.imp.base.IDb;
-import net.bither.bitherj.exception.AddressFormatException;
-import net.bither.bitherj.utils.Base58;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.Address;
+import com.yjt.wallet.core.HDMAddress;
+import com.yjt.wallet.core.HDMBId;
+import com.yjt.wallet.core.HDMKeychain;
+import com.yjt.wallet.core.crypto.EncryptedData;
+import com.yjt.wallet.core.crypto.PasswordSeed;
+import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.db.IAddressProvider;
+import com.yjt.wallet.core.db.base.ICursor;
+import com.yjt.wallet.core.db.base.IDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
+import com.yjt.wallet.core.utils.Base58;
+import com.yjt.wallet.core.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,16 +42,16 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public boolean changePassword(CharSequence oldPassword, CharSequence newPassword) {
-        IDb readDb = this.getReadDb();
+        IDb                           readDb                  = this.getReadDb();
         final HashMap<String, String> addressesPrivKeyHashMap = new HashMap<String, String>();
-        String sql = "select address,encrypt_private_key,pub_key,is_xrandom from addresses where encrypt_private_key is not null";
+        String                        sql                     = "select address,encrypt_private_key,pub_key,is_xrandom from addresses where encrypt_private_key is not null";
         this.execQueryLoop(readDb, sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
             public Void apply(ICursor c) {
-                String address = c.getString(0);
-                String encryptPrivateKey = c.getString(1);
-                boolean isCompress = true;
+                String  address           = c.getString(0);
+                String  encryptPrivateKey = c.getString(1);
+                boolean isCompress        = true;
                 try {
                     byte[] pubKey = Base58.decode(c.getString(2));
                     isCompress = pubKey.length == 33;
@@ -77,15 +76,15 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
         });
 
         final HashMap<Integer, String> encryptMenmonicSeedHashMap = new HashMap<Integer, String>();
-        final HashMap<Integer, String> encryptHDSeedHashMap = new HashMap<Integer, String>();
-        final HashMap<Integer, String> singularModeBackupHashMap = new HashMap<Integer, String>();
+        final HashMap<Integer, String> encryptHDSeedHashMap       = new HashMap<Integer, String>();
+        final HashMap<Integer, String> singularModeBackupHashMap  = new HashMap<Integer, String>();
         sql = "select hd_seed_id,encrypt_seed,encrypt_hd_seed,singular_mode_backup from hd_seeds where encrypt_seed!='RECOVER'";
         this.execQueryLoop(readDb, sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
             public Void apply(@Nullable ICursor c) {
-                Integer hdSeedId = c.getInt(0);
-                String encryptSeed = c.getString(1);
+                Integer hdSeedId    = c.getInt(0);
+                String  encryptSeed = c.getString(1);
                 if (!c.isNull(2)) {
                     String encryptHDSeed = c.getString(2);
                     encryptHDSeedHashMap.put(hdSeedId, encryptHDSeed);
@@ -99,14 +98,14 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
             }
         });
 
-        final HashMap<Integer, String> hdEncryptSeedHashMap = new HashMap<Integer, String>();
+        final HashMap<Integer, String> hdEncryptSeedHashMap         = new HashMap<Integer, String>();
         final HashMap<Integer, String> hdEncryptMnemonicSeedHashMap = new HashMap<Integer, String>();
         sql = "select hd_account_id,encrypt_seed,encrypt_mnemonic_seed from hd_account where encrypt_mnemonic_seed is not null";
         this.execQueryLoop(readDb, sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
             public Void apply(@Nullable ICursor c) {
-                int idColumn = c.getColumnIndex(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
+                int     idColumn    = c.getColumnIndex(AbstractDb.HDAccountColumns.HD_ACCOUNT_ID);
                 Integer hdAccountId = 0;
                 if (idColumn != -1) {
                     hdAccountId = c.getInt(idColumn);
@@ -125,14 +124,14 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
             }
         });
 
-        final HashMap<Integer, String> enterpriseHDEncryptSeedHashMap = new HashMap<Integer, String>();
+        final HashMap<Integer, String> enterpriseHDEncryptSeedHashMap         = new HashMap<Integer, String>();
         final HashMap<Integer, String> enterpriseHDEncryptMnemonicSeedHashMap = new HashMap<Integer, String>();
         sql = "select hd_account_id,encrypt_seed,encrypt_mnemonic_seed from enterprise_hd_account";
         this.execQueryLoop(readDb, sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
             public Void apply(@Nullable ICursor c) {
-                int idColumn = c.getColumnIndex(AbstractDb.EnterpriseHDAccountColumns.HD_ACCOUNT_ID);
+                int     idColumn    = c.getColumnIndex(AbstractDb.EnterpriseHDAccountColumns.HD_ACCOUNT_ID);
                 Integer hdAccountId = 0;
                 if (idColumn != -1) {
                     hdAccountId = c.getInt(idColumn);
@@ -206,7 +205,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
         writeDb.beginTransaction();
         sql = "update addresses set encrypt_private_key=? where address=?";
         for (Map.Entry<String, String> kv : addressesPrivKeyHashMap.entrySet()) {
-            this.execUpdate(writeDb, sql, new String[] {kv.getValue(), kv.getKey()});
+            this.execUpdate(writeDb, sql, new String[]{kv.getValue(), kv.getKey()});
         }
         sql = "update hdm_bid set encrypt_bither_password=?";
         if (hdmEncryptPassword[0] != null) {
@@ -273,7 +272,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     @Override
     public PasswordSeed getPasswordSeed() {
         final PasswordSeed[] passwordSeed = {null};
-        String sql = "select password_seed from password_seed limit 1";
+        String               sql          = "select password_seed from password_seed limit 1";
         this.execQueryOneRecord(sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -286,7 +285,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     }
 
     public boolean hasPasswordSeed(IDb db) {
-        String sql = "select count(0) cnt from password_seed where password_seed is not null";
+        String      sql   = "select count(0) cnt from password_seed where password_seed is not null";
         final int[] count = {0};
         this.execQueryOneRecord(db, sql, null, new Function<ICursor, Void>() {
             @Nullable
@@ -302,6 +301,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
         return count[0] > 0;
     }
 
+    @Override
     public boolean hasPasswordSeed() {
         return this.hasPasswordSeed(this.getReadDb());
     }
@@ -309,14 +309,14 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     public void addPasswordSeed(IDb db, PasswordSeed passwordSeed) {
         if (!Utils.isEmpty(passwordSeed.toPasswordSeedString())) {
             String sql = "insert into password_seed (password_seed) values (?)";
-            this.execUpdate(db, sql, new String[] {passwordSeed.toPasswordSeedString()});
+            this.execUpdate(db, sql, new String[]{passwordSeed.toPasswordSeedString()});
         }
     }
 
     @Override
     public List<Integer> getHDSeeds() {
         final List<Integer> hdSeedIds = new ArrayList<Integer>();
-        String sql = "select hd_seed_id from hd_seeds";
+        String              sql       = "select hd_seed_id from hd_seeds";
         this.execQueryLoop(sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -334,7 +334,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     @Override
     public String getEncryptMnemonicSeed(int hdSeedId) {
         final String[] encryptSeed = {null};
-        String sql = "select encrypt_seed from hd_seeds where hd_seed_id=?";
+        String         sql         = "select encrypt_seed from hd_seeds where hd_seed_id=?";
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -349,7 +349,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     @Override
     public String getEncryptHDSeed(int hdSeedId) {
         final String[] encryptHDSeed = {null};
-        String sql = "select encrypt_hd_seed from hd_seeds where hd_seed_id=?";
+        String         sql           = "select encrypt_hd_seed from hd_seeds where hd_seed_id=?";
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -365,13 +365,13 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     @Override
     public void updateEncrypttMnmonicSeed(int hdSeedId, String encryptMnmonicSeed) {
         String sql = "update hd_seeds set encrypt_hd_seed=? where hd_seed_id=?";
-        this.execUpdate(sql, new String[] {encryptMnmonicSeed, Integer.toString(hdSeedId)});
+        this.execUpdate(sql, new String[]{encryptMnmonicSeed, Integer.toString(hdSeedId)});
     }
 
 
     @Override
     public boolean isHDSeedFromXRandom(int hdSeedId) {
-        String sql = "select is_xrandom from hd_seeds where hd_seed_id=?";
+        String          sql       = "select is_xrandom from hd_seeds where hd_seed_id=?";
         final boolean[] isXRandom = {false};
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -390,7 +390,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public String getHDMFristAddress(int hdSeedId) {
-        String sql = "select hdm_address from hd_seeds where hd_seed_id=?";
+        String         sql     = "select hdm_address from hd_seeds where hd_seed_id=?";
         final String[] address = {null};
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -408,7 +408,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public String getSingularModeBackup(int hdSeedId) {
-        String sql = "select singular_mode_backup from hd_seeds where hd_seed_id=?";
+        String         sql                = "select singular_mode_backup from hd_seeds where hd_seed_id=?";
         final String[] singularModeBackup = {null};
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -457,9 +457,9 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public HDMBId getHDMBId() {
-        String sql = "select hdm_bid,encrypt_bither_password from hdm_bid";
-        HDMBId hdmbId = null;
-        final String[] address = {null};
+        String         sql                   = "select hdm_bid,encrypt_bither_password from hdm_bid";
+        HDMBId         hdmbId                = null;
+        final String[] address               = {null};
         final String[] encryptBitherPassword = {null};
         this.execQueryOneRecord(sql, null, new Function<ICursor, Void>() {
             @Nullable
@@ -486,7 +486,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public void addAndUpdateHDMBId(HDMBId hdmBid, String addressOfPS) {
-        String sql = "select count(0) from hdm_bid";
+        String          sql     = "select count(0) from hdm_bid";
         final boolean[] isExist = {true};
         this.execQueryOneRecord(sql, null, new Function<ICursor, Void>() {
             @Nullable
@@ -498,7 +498,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
         });
         if (!isExist[0]) {
             String encryptedBitherPasswordString = hdmBid.getEncryptedBitherPasswordString();
-            IDb writeDb = this.getWriteDb();
+            IDb    writeDb                       = this.getWriteDb();
             sql = "insert into hdm_bid(hdm_bid,encrypt_bither_password) values(?,?)";
             writeDb.beginTransaction();
             this.execUpdate(writeDb, sql, new String[]{hdmBid.getAddress(), encryptedBitherPasswordString});
@@ -508,9 +508,10 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
             writeDb.endTransaction();
         } else {
             String encryptedBitherPasswordString = hdmBid.getEncryptedBitherPasswordString();
-            IDb writeDb = this.getWriteDb();
+            IDb    writeDb                       = this.getWriteDb();
             sql = "update hdm_bid set encrypt_bither_password=? where hdm_bid=?";
-            writeDb.beginTransaction();;
+            writeDb.beginTransaction();
+            ;
             this.execUpdate(writeDb, sql, new String[]{encryptedBitherPasswordString, hdmBid.getAddress()});
             if (!hasPasswordSeed(writeDb) && !Utils.isEmpty(addressOfPS)) {
                 addPasswordSeed(writeDb, new PasswordSeed(addressOfPS, encryptedBitherPasswordString));
@@ -524,8 +525,8 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
         String sql = "select hd_seed_index,pub_key_hot,pub_key_cold,pub_key_remote,address,is_synced " +
                 " from hdm_addresses " +
                 " where hd_seed_id=? and address is not null order by hd_seed_index";
-        final List<HDMAddress> addresses = new ArrayList<HDMAddress>();
-        final HDMKeychain hdmKeychain = keychain;
+        final List<HDMAddress> addresses   = new ArrayList<HDMAddress>();
+        final HDMKeychain      hdmKeychain = keychain;
         this.execQueryLoop(sql, new String[]{Integer.toString(keychain.getHdSeedId())}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -543,7 +544,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public void prepareHDMAddresses(int hdSeedId, List<HDMAddress.Pubs> pubsList) {
-        String sql = "select count(0) from hdm_addresses where hd_seed_id=? and hd_seed_index=?";
+        String          sql     = "select count(0) from hdm_addresses where hd_seed_id=? and hd_seed_index=?";
         final boolean[] isExist = {false};
         for (HDMAddress.Pubs pubs : pubsList) {
             this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId), Integer.toString(pubs.index)}, new Function<ICursor, Void>() {
@@ -570,11 +571,11 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     }
 
     protected abstract void insertHDMAddressToDb(IDb db, String address, int hdSeedId, int index, byte[] pubKeysHot,
-                                 byte[] pubKeysCold, byte[] pubKeysRemote, boolean isSynced);
+                                                 byte[] pubKeysCold, byte[] pubKeysRemote, boolean isSynced);
 
     @Override
     public List<HDMAddress.Pubs> getUncompletedHDMAddressPubs(int hdSeedId, int count) {
-        String sql = "select * from hdm_addresses where hd_seed_id=? and pub_key_remote is null limit ? ";
+        String                      sql      = "select * from hdm_addresses where hd_seed_id=? and pub_key_remote is null limit ? ";
         final List<HDMAddress.Pubs> pubsList = new ArrayList<HDMAddress.Pubs>();
 
         this.execQueryLoop(sql, new String[]{Integer.toString(hdSeedId), Integer.toString(count)}, new Function<ICursor, Void>() {
@@ -593,7 +594,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public int maxHDMAddressPubIndex(int hdSeedId) {
-        String sql = "select ifnull(max(hd_seed_index),-1)  hd_seed_index from hdm_addresses where hd_seed_id=?  ";
+        String      sql      = "select ifnull(max(hd_seed_index),-1)  hd_seed_index from hdm_addresses where hd_seed_id=?  ";
         final int[] maxIndex = {-1};
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -611,7 +612,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public int uncompletedHDMAddressCount(int hdSeedId) {
-        String sql = "select count(0) cnt from hdm_addresses where hd_seed_id=?  and pub_key_remote is null ";
+        String      sql   = "select count(0) cnt from hdm_addresses where hd_seed_id=?  and pub_key_remote is null ";
         final int[] count = {0};
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -627,6 +628,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
         return count[0];
     }
 
+    @Override
     public void setHDMPubsRemote(int hdSeedId, int index, byte[] remote) {
         String sql = "select count(0) from hdm_addresses " +
                 "where hd_seed_id=? and hd_seed_index=? and pub_key_remote is null";
@@ -719,8 +721,9 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
         return addressList;
     }
 
+    @Override
     public String getEncryptPrivateKey(String address) {
-        String sql = "select encrypt_private_key from addresses where address=?";
+        String         sql               = "select encrypt_private_key from addresses where address=?";
         final String[] encryptPrivateKey = {null};
         this.execQueryOneRecord(sql, new String[]{address}, new Function<ICursor, Void>() {
             @Nullable
@@ -785,16 +788,16 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public Map<String, String> getAliases() {
-        String sql = "select * from aliases";
+        String                    sql       = "select * from aliases";
         final Map<String, String> aliasList = new HashMap<String, String>();
 
         this.execQueryLoop(sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
             public Void apply(@Nullable ICursor c) {
-                int idColumn = c.getColumnIndex(AbstractDb.AliasColumns.ADDRESS);
-                String address = null;
-                String alias = null;
+                int    idColumn = c.getColumnIndex(AbstractDb.AliasColumns.ADDRESS);
+                String address  = null;
+                String alias    = null;
                 if (idColumn > -1) {
                     address = c.getString(idColumn);
                 }
@@ -822,16 +825,16 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     @Override
     public Map<String, Integer> getVanitylens() {
-        String sql = "select * from vanity_address";
+        String                     sql          = "select * from vanity_address";
         final Map<String, Integer> vanityLenMap = new HashMap<String, Integer>();
 
         this.execQueryLoop(sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
             public Void apply(@Nullable ICursor c) {
-                int idColumn = c.getColumnIndex(AbstractDb.VanityAddressColumns.ADDRESS);
-                String address = null;
-                int alias = Address.VANITY_LEN_NO_EXSITS;
+                int    idColumn = c.getColumnIndex(AbstractDb.VanityAddressColumns.ADDRESS);
+                String address  = null;
+                int    alias    = Address.VANITY_LEN_NO_EXSITS;
                 if (idColumn > -1) {
                     address = c.getString(idColumn);
                 }
@@ -860,7 +863,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     private HDMAddress applyHDMAddress(ICursor c, HDMKeychain keychain) {
         HDMAddress hdmAddress;
 
-        String address = null;
+        String  address  = null;
         boolean isSynced = false;
 
         int idColumn = c.getColumnIndex(AbstractDb.HDMAddressesColumns.ADDRESS);
@@ -877,7 +880,7 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     }
 
     public PasswordSeed applyPasswordSeed(ICursor c) {
-        int idColumn = c.getColumnIndex(AbstractDb.PasswordSeedColumns.PASSWORD_SEED);
+        int    idColumn     = c.getColumnIndex(AbstractDb.PasswordSeedColumns.PASSWORD_SEED);
         String passwordSeed = null;
         if (idColumn != -1) {
             passwordSeed = c.getString(idColumn);
@@ -889,11 +892,11 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
     }
 
     private HDMAddress.Pubs applyPubs(ICursor c) {
-        int hdSeedIndex = 0;
-        byte[] hot = null;
-        byte[] cold = null;
-        byte[] remote = null;
-        int idColumn = c.getColumnIndex(AbstractDb.HDMAddressesColumns.HD_SEED_INDEX);
+        int    hdSeedIndex = 0;
+        byte[] hot         = null;
+        byte[] cold        = null;
+        byte[] remote      = null;
+        int    idColumn    = c.getColumnIndex(AbstractDb.HDMAddressesColumns.HD_SEED_INDEX);
         if (idColumn != -1) {
             hdSeedIndex = c.getInt(idColumn);
         }
@@ -926,14 +929,14 @@ public abstract class AbstractAddressProvider extends AbstractProvider implement
 
     private Address applyAddressCursor(ICursor c) throws AddressFormatException {
         Address address;
-        int idColumn = c.getColumnIndex(AbstractDb.AddressesColumns.ADDRESS);
-        String addressStr = null;
-        String encryptPrivateKey = null;
-        byte[] pubKey = null;
-        boolean isXRandom = false;
-        boolean isSynced = false;
-        boolean isTrash = false;
-        long sortTime = 0;
+        int     idColumn          = c.getColumnIndex(AbstractDb.AddressesColumns.ADDRESS);
+        String  addressStr        = null;
+        String  encryptPrivateKey = null;
+        byte[]  pubKey            = null;
+        boolean isXRandom         = false;
+        boolean isSynced          = false;
+        boolean isTrash           = false;
+        long    sortTime          = 0;
 
         if (idColumn != -1) {
             addressStr = c.getString(idColumn);

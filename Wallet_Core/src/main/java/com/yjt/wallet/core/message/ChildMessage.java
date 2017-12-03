@@ -15,7 +15,7 @@
  */
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.exception.ProtocolException;
+import com.yjt.wallet.core.exception.ProtocolException;
 
 import javax.annotation.Nullable;
 
@@ -75,10 +75,12 @@ public abstract class ChildMessage extends Message {
         adjustLength(0, adjustment);
     }
 
+    @Override
     protected void adjustLength(int newArraySize, int adjustment) {
         super.adjustLength(newArraySize, adjustment);
-        if (parent != null)
+        if (parent != null) {
             parent.adjustLength(newArraySize, adjustment);
+        }
     }
 
 }

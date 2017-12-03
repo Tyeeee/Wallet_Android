@@ -18,9 +18,9 @@
 
 package com.yjt.wallet.core.api;
 
-import net.bither.bitherj.api.http.HttpsPostResponse;
-import net.bither.bitherj.core.Tx;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.Tx;
+import com.yjt.wallet.core.api.http.HttpsPostResponse;
+import com.yjt.wallet.core.utils.Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +37,8 @@ public class PushTxThirdParty {
     private static final int ThreadCount = 5;
 
     private static PushTxThirdParty instance;
-    private static Object singletonLock = new Object();
-    private final ExecutorService executor = Executors.newFixedThreadPool(ThreadCount);
+    private static Object          singletonLock = new Object();
+    private final  ExecutorService executor      = Executors.newFixedThreadPool(ThreadCount);
 
     private static final Logger log = LoggerFactory.getLogger(PushTxThirdParty.class);
 
@@ -73,7 +73,7 @@ public class PushTxThirdParty {
 
     private void pushToChainQuery(String rawTx) {
         pushTo("https://chainquery.com/bitcoin-api/sendrawtransaction", "transaction", rawTx,
-                "ChainQuery.com");
+               "ChainQuery.com");
     }
 
     private void pushToBlockr(String rawTx) {
@@ -86,6 +86,7 @@ public class PushTxThirdParty {
 
     private void pushTo(final String url, final String key, final String rawTx, final String tag) {
         executor.execute(new Runnable() {
+            @Override
             public void run() {
                 log.info("begin push tx to {}", tag);
                 try {

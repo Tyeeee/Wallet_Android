@@ -18,21 +18,21 @@ package com.yjt.wallet.core.db.implement;
 
 import com.google.common.base.Function;
 
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.core.AbstractHD;
-import net.bither.bitherj.core.HDAccount;
-import net.bither.bitherj.core.In;
-import net.bither.bitherj.core.Out;
-import net.bither.bitherj.core.OutPoint;
-import net.bither.bitherj.core.Tx;
-import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.db.IHDAccountAddressProvider;
-import net.bither.bitherj.db.imp.base.ICursor;
-import net.bither.bitherj.db.imp.base.IDb;
-import net.bither.bitherj.exception.AddressFormatException;
-import net.bither.bitherj.utils.Base58;
-import net.bither.bitherj.utils.Sha256Hash;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.AbstractHD;
+import com.yjt.wallet.core.HDAccount;
+import com.yjt.wallet.core.In;
+import com.yjt.wallet.core.Out;
+import com.yjt.wallet.core.OutPoint;
+import com.yjt.wallet.core.Tx;
+import com.yjt.wallet.core.contant.BitherjSettings;
+import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.db.IHDAccountAddressProvider;
+import com.yjt.wallet.core.db.base.ICursor;
+import com.yjt.wallet.core.db.base.IDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
+import com.yjt.wallet.core.utils.Base58;
+import com.yjt.wallet.core.utils.Sha256Hash;
+import com.yjt.wallet.core.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,11 +45,11 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
 
     @Override
     public void addAddress(List<HDAccount.HDAccountAddress> hdAccountAddresses) {
-        String sql = "insert into hd_account_addresses(hd_account_id,path_type,address_index,is_issued,address,pub,is_synced) values(?,?,?,?,?,?,?)";
-        IDb writeDb = this.getWriteDb();
+        String sql     = "insert into hd_account_addresses(hd_account_id,path_type,address_index,is_issued,address,pub,is_synced) values(?,?,?,?,?,?,?)";
+        IDb    writeDb = this.getWriteDb();
         writeDb.beginTransaction();
         for (HDAccount.HDAccountAddress hdAccountAddress : hdAccountAddresses) {
-            this.execUpdate(writeDb, sql, new String[] {
+            this.execUpdate(writeDb, sql, new String[]{
                     Integer.toString(hdAccountAddress.getHdAccountId())
                     , Integer.toString(hdAccountAddress.getPathType().getValue())
                     , Integer.toString(hdAccountAddress.getIndex())
@@ -177,7 +177,7 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
 
     @Override
     public Tx updateOutHDAccountId(Tx tx) {
-        final Tx finalTx = tx;
+        final Tx     finalTx     = tx;
         List<String> addressList = tx.getOutAddressList();
         if (addressList != null && addressList.size() > 0) {
             HashSet<String> set = new HashSet<String>();
@@ -193,8 +193,8 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
                 @Nullable
                 @Override
                 public Void apply(@Nullable ICursor c) {
-                    String address = c.getString(0);
-                    int hdAccountId = c.getInt(1);
+                    String address     = c.getString(0);
+                    int    hdAccountId = c.getInt(1);
                     for (Out out : finalTx.getOuts()) {
                         if (Utils.compareString(out.getOutAddress(), address)) {
                             out.setHDAccountId(hdAccountId);
@@ -257,7 +257,7 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
 
     @Override
     public List<byte[]> getPubs(int hdAccountId, AbstractHD.PathType pathType) {
-        String sql = "select pub from hd_account_addresses where path_type=? and hd_account_id=?";
+        String             sql           = "select pub from hd_account_addresses where path_type=? and hd_account_id=?";
         final List<byte[]> adressPubList = new ArrayList<byte[]>();
         this.execQueryLoop(sql, new String[]{Integer.toString(pathType.getValue()), Integer.toString(hdAccountId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -388,7 +388,7 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
                 " from txs a,addresses_txs b,hd_account_addresses c" +
                 " where a.tx_hash=b.tx_hash and b.address=c.address and c.hd_account_id=? and a.block_no is null" +
                 " order by a.tx_hash";
-        final List<Tx> txList = new ArrayList<Tx>();
+        final List<Tx>                txList = new ArrayList<Tx>();
         final HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
 
         IDb db = this.getReadDb();
@@ -414,7 +414,7 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
             @Override
             public Void apply(@Nullable ICursor c) {
                 In inItem = AbstractTxProvider.applyCursorIn(c);
-                Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                Tx tx     = txDict.get(new Sha256Hash(inItem.getTxHash()));
                 if (tx != null) {
                     tx.getIns().add(inItem);
                 }
@@ -431,7 +431,7 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
             @Override
             public Void apply(@Nullable ICursor c) {
                 Out out = AbstractTxProvider.applyCursorOut(c);
-                Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+                Tx  tx  = txDict.get(new Sha256Hash(out.getTxHash()));
                 if (tx != null) {
                     tx.getOuts().add(out);
                 }
@@ -488,7 +488,7 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
 
     @Override
     public int unSyncedAddressCount(int hdAccountId) {
-        String sql = "select count(address) cnt from hd_account_addresses where is_synced=? and hd_account_id=? ";
+        String      sql = "select count(address) cnt from hd_account_addresses where is_synced=? and hd_account_id=? ";
         final int[] cnt = {0};
         this.execQueryOneRecord(sql, new String[]{"0", Integer.toString(hdAccountId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -582,13 +582,13 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
 
     @Override
     public List<Tx> getTxAndDetailByHDAccount(int hdAccountId) {
-        final List<Tx> txItemList = new ArrayList<Tx>();
-        final HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
+        final List<Tx>                txItemList = new ArrayList<Tx>();
+        final HashMap<Sha256Hash, Tx> txDict     = new HashMap<Sha256Hash, Tx>();
         String sql = "select distinct a.* " +
                 " from txs a,addresses_txs b,hd_account_addresses c" +
                 " where a.tx_hash=b.tx_hash and b.address=c.address and c.hd_account_id=?" +
                 " order by ifnull(block_no,4294967295) desc,a.tx_hash";
-        IDb db = this.getReadDb();
+        IDb                 db            = this.getReadDb();
         final StringBuilder txsStrBuilder = new StringBuilder();
         this.execQueryLoop(db, sql, new String[]{Integer.toString(hdAccountId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -607,13 +607,13 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
         if (txsStrBuilder.length() > 1) {
             String txs = txsStrBuilder.substring(0, txsStrBuilder.length() - 1);
             sql = Utils.format("select b.* from ins b where b.tx_hash in (%s)" +
-                    " order by b.tx_hash ,b.in_sn", txs);
+                                       " order by b.tx_hash ,b.in_sn", txs);
             this.execQueryLoop(db, sql, null, new Function<ICursor, Void>() {
                 @Nullable
                 @Override
                 public Void apply(@Nullable ICursor c) {
                     In inItem = AbstractTxProvider.applyCursorIn(c);
-                    Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                    Tx tx     = txDict.get(new Sha256Hash(inItem.getTxHash()));
                     if (tx != null) {
                         tx.getIns().add(inItem);
                     }
@@ -621,13 +621,13 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
                 }
             });
             sql = Utils.format("select b.* from outs b where b.tx_hash in (%s)" +
-                    " order by b.tx_hash,b.out_sn", txs);
+                                       " order by b.tx_hash,b.out_sn", txs);
             this.execQueryLoop(db, sql, null, new Function<ICursor, Void>() {
                 @Nullable
                 @Override
                 public Void apply(@Nullable ICursor c) {
                     Out out = AbstractTxProvider.applyCursorOut(c);
-                    Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+                    Tx  tx  = txDict.get(new Sha256Hash(out.getTxHash()));
                     if (tx != null) {
                         tx.getOuts().add(out);
                     }
@@ -640,14 +640,14 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
 
     @Override
     public List<Tx> getTxAndDetailByHDAccount(int hdAccountId, int page) {
-        final List<Tx> txItemList = new ArrayList<Tx>();
-        final HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
+        final List<Tx>                txItemList = new ArrayList<Tx>();
+        final HashMap<Sha256Hash, Tx> txDict     = new HashMap<Sha256Hash, Tx>();
         String sql = "select distinct a.* " +
                 " from txs a,addresses_txs b,hd_account_addresses c" +
                 " where a.tx_hash=b.tx_hash and b.address=c.address and c.hd_account_id=?" +
                 " order by ifnull(block_no,4294967295) desc,a.tx_hash" +
                 " limit ?,?";
-        IDb db = this.getReadDb();
+        IDb                 db            = this.getReadDb();
         final StringBuilder txsStrBuilder = new StringBuilder();
         this.execQueryLoop(db, sql, new String[]{
                 Integer.toString(hdAccountId)
@@ -670,13 +670,13 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
         if (txsStrBuilder.length() > 1) {
             String txs = txsStrBuilder.substring(0, txsStrBuilder.length() - 1);
             sql = Utils.format("select b.* from ins b where b.tx_hash in (%s)" +
-                    " order by b.tx_hash ,b.in_sn", txs);
+                                       " order by b.tx_hash ,b.in_sn", txs);
             this.execQueryLoop(db, sql, null, new Function<ICursor, Void>() {
                 @Nullable
                 @Override
                 public Void apply(@Nullable ICursor c) {
                     In inItem = AbstractTxProvider.applyCursorIn(c);
-                    Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                    Tx tx     = txDict.get(new Sha256Hash(inItem.getTxHash()));
                     if (tx != null) {
                         tx.getIns().add(inItem);
                     }
@@ -684,13 +684,13 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
                 }
             });
             sql = Utils.format("select b.* from outs b where b.tx_hash in (%s)" +
-                    " order by b.tx_hash,b.out_sn", txs);
+                                       " order by b.tx_hash,b.out_sn", txs);
             this.execQueryLoop(sql, null, new Function<ICursor, Void>() {
                 @Nullable
                 @Override
                 public Void apply(@Nullable ICursor c) {
                     Out out = AbstractTxProvider.applyCursorOut(c);
-                    Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+                    Tx  tx  = txDict.get(new Sha256Hash(out.getTxHash()));
                     if (tx != null) {
                         tx.getOuts().add(out);
                     }
@@ -815,8 +815,8 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
 
     @Override
     public boolean requestNewReceivingAddress(int hdAccountId) {
-        int issuedIndex = this.issuedIndex(hdAccountId, AbstractHD.PathType.EXTERNAL_ROOT_PATH);
-        final boolean[] result = {false};
+        int             issuedIndex = this.issuedIndex(hdAccountId, AbstractHD.PathType.EXTERNAL_ROOT_PATH);
+        final boolean[] result      = {false};
         if (issuedIndex >= HDAccount.MaxUnusedNewAddressCount - 2) {
             String sql = "select count(0) from hd_account_addresses a,outs b " +
                     " where a.address=b.out_address and a.hd_account_id=? and a.path_type=0 and a.address_index>? and a.is_issued=?";
@@ -838,15 +838,15 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
     }
 
     private HDAccount.HDAccountAddress formatAddress(ICursor c) {
-        String address = null;
-        byte[] pubs = null;
-        AbstractHD.PathType ternalRootType = AbstractHD.PathType.EXTERNAL_ROOT_PATH;
-        int index = 0;
-        boolean isIssued = false;
-        boolean isSynced = true;
-        int hdAccountId = 0;
+        String                     address          = null;
+        byte[]                     pubs             = null;
+        AbstractHD.PathType        ternalRootType   = AbstractHD.PathType.EXTERNAL_ROOT_PATH;
+        int                        index            = 0;
+        boolean                    isIssued         = false;
+        boolean                    isSynced         = true;
+        int                        hdAccountId      = 0;
         HDAccount.HDAccountAddress hdAccountAddress = null;
-        int idColumn = c.getColumnIndex(AbstractDb.HDAccountAddressesColumns.ADDRESS);
+        int                        idColumn         = c.getColumnIndex(AbstractDb.HDAccountAddressesColumns.ADDRESS);
         if (idColumn != -1) {
             address = c.getString(idColumn);
         }
@@ -879,7 +879,7 @@ public abstract class AbstractHDAccountAddressProvider extends AbstractProvider 
             hdAccountId = c.getInt(idColumn);
         }
         hdAccountAddress = new HDAccount.HDAccountAddress(address, pubs,
-                ternalRootType, index, isIssued, isSynced, hdAccountId);
+                                                          ternalRootType, index, isIssued, isSynced, hdAccountId);
         return hdAccountAddress;
     }
 }

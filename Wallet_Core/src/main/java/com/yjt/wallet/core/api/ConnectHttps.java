@@ -1,7 +1,7 @@
 package com.yjt.wallet.core.api;
 
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.api.http.HttpSetting;
+import com.yjt.wallet.core.api.http.HttpSetting;
+import com.yjt.wallet.core.contant.BitherjSettings;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +52,14 @@ public final class ConnectHttps {
     }
 
     public static String httpGet(String urlString) throws Exception {
-        URL url;
+        URL                url;
         HttpsURLConnection con = null;
         try {
             System.out.println("\n" + urlString);
             url = new URL(urlString);
             con = (HttpsURLConnection) url.openConnection();
             StringBuffer out = new StringBuffer();
-            byte[] b = new byte[4096];
+            byte[]       b   = new byte[4096];
             for (int n;
                  (n = con.getInputStream().read(b)) != -1; ) {
                 out.append(new String(b, 0, n));
@@ -77,8 +77,8 @@ public final class ConnectHttps {
     }
 
     public static String doPost(String reqUrl, Map parameters) throws Exception {
-        HttpsURLConnection url_con = null;
-        String responseContent = null;
+        HttpsURLConnection url_con         = null;
+        String             responseContent = null;
         try {
             StringBuffer params = new StringBuffer();
             for (Iterator iter = parameters.entrySet().iterator();
@@ -87,7 +87,7 @@ public final class ConnectHttps {
                 params.append(element.getKey().toString());
                 params.append("=");
                 params.append(URLEncoder.encode(element.getValue().toString(),
-                        HttpSetting.REQUEST_ENCODING));
+                                                HttpSetting.REQUEST_ENCODING));
                 params.append("&");
             }
 
@@ -99,9 +99,9 @@ public final class ConnectHttps {
             url_con = (HttpsURLConnection) url.openConnection();
             url_con.setRequestMethod("POST");
             System.setProperty("sun.net.client.defaultConnectTimeout",
-                    String.valueOf(HttpSetting.HTTP_CONNECTION_TIMEOUT));
+                               String.valueOf(HttpSetting.HTTP_CONNECTION_TIMEOUT));
             System.setProperty("sun.net.client.defaultReadTimeout",
-                    String.valueOf(HttpSetting.HTTP_SO_TIMEOUT));
+                               String.valueOf(HttpSetting.HTTP_SO_TIMEOUT));
 
             url_con.setDoOutput(true);
             byte[] b = params.toString().getBytes();
@@ -111,10 +111,10 @@ public final class ConnectHttps {
 
             InputStream in = url_con.getInputStream();
             BufferedReader rd = new BufferedReader(new InputStreamReader(in,
-                    HttpSetting.REQUEST_ENCODING));
-            String tempLine = rd.readLine();
-            StringBuffer tempStr = new StringBuffer();
-            String crlf = System.getProperty("line.separator");
+                                                                         HttpSetting.REQUEST_ENCODING));
+            String       tempLine = rd.readLine();
+            StringBuffer tempStr  = new StringBuffer();
+            String       crlf     = System.getProperty("line.separator");
             while (tempLine != null) {
                 tempStr.append(tempLine);
                 tempStr.append(crlf);

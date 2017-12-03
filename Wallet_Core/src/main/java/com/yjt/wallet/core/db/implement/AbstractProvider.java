@@ -17,10 +17,10 @@
 package com.yjt.wallet.core.db.implement;
 
 import com.google.common.base.Function;
+import com.yjt.wallet.core.db.base.ICursor;
+import com.yjt.wallet.core.db.base.IDb;
+import com.yjt.wallet.core.db.base.IProvider;
 
-import net.bither.bitherj.db.imp.base.ICursor;
-import net.bither.bitherj.db.imp.base.IDb;
-import net.bither.bitherj.db.imp.base.IProvider;
 
 public abstract class AbstractProvider implements IProvider {
     @Override

@@ -18,18 +18,18 @@ package com.yjt.wallet.core.db.implement;
 
 import com.google.common.base.Function;
 
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.core.In;
-import net.bither.bitherj.core.Out;
-import net.bither.bitherj.core.Tx;
-import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.db.ITxProvider;
-import net.bither.bitherj.db.imp.base.ICursor;
-import net.bither.bitherj.db.imp.base.IDb;
-import net.bither.bitherj.exception.AddressFormatException;
-import net.bither.bitherj.utils.Base58;
-import net.bither.bitherj.utils.Sha256Hash;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.In;
+import com.yjt.wallet.core.Out;
+import com.yjt.wallet.core.Tx;
+import com.yjt.wallet.core.contant.BitherjSettings;
+import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.db.ITxProvider;
+import com.yjt.wallet.core.db.base.ICursor;
+import com.yjt.wallet.core.db.base.IDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
+import com.yjt.wallet.core.utils.Base58;
+import com.yjt.wallet.core.utils.Sha256Hash;
+import com.yjt.wallet.core.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,8 +42,8 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
 
     @Override
     public List<Tx> getTxAndDetailByAddress(String address) {
-        final List<Tx> txItemList = new ArrayList<Tx>();
-        final HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
+        final List<Tx>                txItemList = new ArrayList<Tx>();
+        final HashMap<Sha256Hash, Tx> txDict     = new HashMap<Sha256Hash, Tx>();
         String sql = "select b.* from addresses_txs a, txs b" +
                 " where a.tx_hash=b.tx_hash and a.address=? order by ifnull(b.block_no,4294967295) desc";
         IDb db = this.getReadDb();
@@ -73,7 +73,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
             @Override
             public Void apply(@Nullable ICursor c) {
                 In inItem = applyCursorIn(c);
-                Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                Tx tx     = txDict.get(new Sha256Hash(inItem.getTxHash()));
                 if (tx != null) {
                     tx.getIns().add(inItem);
                 }
@@ -90,7 +90,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
             @Override
             public Void apply(@Nullable ICursor c) {
                 Out out = applyCursorOut(c);
-                Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+                Tx  tx  = txDict.get(new Sha256Hash(out.getTxHash()));
                 if (tx != null) {
                     tx.getOuts().add(out);
                 }
@@ -101,8 +101,8 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
 
     @Override
     public List<Tx> getTxAndDetailByAddress(String address, int page) {
-        final List<Tx> txItemList = new ArrayList<Tx>();
-        final HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
+        final List<Tx>                txItemList = new ArrayList<Tx>();
+        final HashMap<Sha256Hash, Tx> txDict     = new HashMap<Sha256Hash, Tx>();
 
         IDb db = this.getReadDb();
 
@@ -110,32 +110,32 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
                 " where a.tx_hash=b.tx_hash and a.address=? order by ifnull(b.block_no,4294967295) desc limit ?,? ";
         final StringBuilder txsStrBuilder = new StringBuilder();
         this.execQueryLoop(db, sql, new String[]{address
-                    , Integer.toString((page - 1) * BitherjSettings.TX_PAGE_SIZE)
-                    , Integer.toString(BitherjSettings.TX_PAGE_SIZE)}
+                                   , Integer.toString((page - 1) * BitherjSettings.TX_PAGE_SIZE)
+                                   , Integer.toString(BitherjSettings.TX_PAGE_SIZE)}
                 , new Function<ICursor, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable ICursor c) {
-                Tx txItem = applyCursor(c);
-                txItem.setIns(new ArrayList<In>());
-                txItem.setOuts(new ArrayList<Out>());
-                txItemList.add(txItem);
-                txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
-                txsStrBuilder.append("'").append(Base58.encode(txItem.getTxHash())).append("'").append(",");
-                return null;
-            }
-        });
+                    @Nullable
+                    @Override
+                    public Void apply(@Nullable ICursor c) {
+                        Tx txItem = applyCursor(c);
+                        txItem.setIns(new ArrayList<In>());
+                        txItem.setOuts(new ArrayList<Out>());
+                        txItemList.add(txItem);
+                        txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
+                        txsStrBuilder.append("'").append(Base58.encode(txItem.getTxHash())).append("'").append(",");
+                        return null;
+                    }
+                });
 
         if (txsStrBuilder.length() > 1) {
             String txs = txsStrBuilder.substring(0, txsStrBuilder.length() - 1);
             sql = Utils.format("select b.* from ins b where b.tx_hash in (%s)" +
-                    " order by b.tx_hash ,b.in_sn", txs);
+                                       " order by b.tx_hash ,b.in_sn", txs);
             this.execQueryLoop(db, sql, null, new Function<ICursor, Void>() {
                 @Nullable
                 @Override
                 public Void apply(@Nullable ICursor c) {
                     In inItem = applyCursorIn(c);
-                    Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                    Tx tx     = txDict.get(new Sha256Hash(inItem.getTxHash()));
                     if (tx != null) {
                         tx.getIns().add(inItem);
                     }
@@ -143,13 +143,13 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
                 }
             });
             sql = Utils.format("select b.* from outs b where b.tx_hash in (%s)" +
-                    " order by b.tx_hash,b.out_sn", txs);
+                                       " order by b.tx_hash,b.out_sn", txs);
             this.execQueryLoop(db, sql, null, new Function<ICursor, Void>() {
                 @Nullable
                 @Override
                 public Void apply(@Nullable ICursor c) {
                     Out out = applyCursorOut(c);
-                    Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+                    Tx  tx  = txDict.get(new Sha256Hash(out.getTxHash()));
                     if (tx != null) {
                         tx.getOuts().add(out);
                     }
@@ -162,10 +162,10 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
 
     @Override
     public List<Tx> getPublishedTxs() {
-        final List<Tx> txItemList = new ArrayList<Tx>();
-        final HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
-        IDb db = this.getReadDb();
-        String sql = "select * from txs where block_no is null";
+        final List<Tx>                txItemList = new ArrayList<Tx>();
+        final HashMap<Sha256Hash, Tx> txDict     = new HashMap<Sha256Hash, Tx>();
+        IDb                           db         = this.getReadDb();
+        String                        sql        = "select * from txs where block_no is null";
         this.execQueryLoop(db, sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -186,7 +186,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
             @Override
             public Void apply(@Nullable ICursor c) {
                 In inItem = applyCursorIn(c);
-                Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                Tx tx     = txDict.get(new Sha256Hash(inItem.getTxHash()));
                 tx.getIns().add(inItem);
                 return null;
             }
@@ -198,7 +198,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
             @Override
             public Void apply(@Nullable ICursor c) {
                 Out out = applyCursorOut(c);
-                Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
+                Tx  tx  = txDict.get(new Sha256Hash(out.getTxHash()));
                 tx.getOuts().add(out);
                 return null;
             }
@@ -206,12 +206,13 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         return txItemList;
     }
 
+    @Override
     public Tx getTxDetailByTxHash(byte[] txHash) {
-        final Tx[] txItem = {null};
-        final boolean[] txExists = {false};
-        String txHashStr = Base58.encode(txHash);
-        String sql = "select * from txs where tx_hash=?";
-        IDb db = this.getReadDb();
+        final Tx[]      txItem    = {null};
+        final boolean[] txExists  = {false};
+        String          txHashStr = Base58.encode(txHash);
+        String          sql       = "select * from txs where tx_hash=?";
+        IDb             db        = this.getReadDb();
         this.execQueryOneRecord(db, sql, new String[]{txHashStr}, new Function<ICursor, Void>() {
             @Nullable
 
@@ -248,9 +249,10 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
     }
 
 
+    @Override
     public boolean isExist(byte[] txHash) {
         final boolean[] result = {false};
-        String sql = "select count(0) from txs where tx_hash=?";
+        String          sql    = "select count(0) from txs where tx_hash=?";
         this.execQueryOneRecord(sql, new String[]{Base58.encode(txHash)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -262,6 +264,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         return result[0];
     }
 
+    @Override
     public void add(Tx txItem) {
         IDb db = this.getWriteDb();
         db.beginTransaction();
@@ -269,6 +272,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         db.endTransaction();
     }
 
+    @Override
     public void addTxs(List<Tx> txItems) {
         if (txItems.size() > 0) {
             IDb db = this.getWriteDb();
@@ -283,7 +287,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
     private void addTxToDb(IDb db, Tx txItem) {
         this.insertTx(db, txItem);
         List<AddressTx> addressesTxsRels = new ArrayList<AddressTx>();
-        List<AddressTx> temp = insertIn(db, txItem);
+        List<AddressTx> temp             = insertIn(db, txItem);
         if (temp != null && temp.size() > 0) {
             addressesTxsRels.addAll(temp);
         }
@@ -297,9 +301,10 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         }
     }
 
+    @Override
     public void remove(byte[] txHash) {
-        String txHashStr = Base58.encode(txHash);
-        List<String> txHashes = new ArrayList<String>();
+        String       txHashStr          = Base58.encode(txHash);
+        List<String> txHashes           = new ArrayList<String>();
         List<String> needRemoveTxHashes = new ArrayList<String>();
         txHashes.add(txHashStr);
         while (txHashes.size() > 0) {
@@ -318,21 +323,21 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
     }
 
     private void removeSingleTx(IDb db, String tx) {
-        String deleteTx = "delete from txs where tx_hash=?";
-        String deleteIn = "delete from ins where tx_hash=?";
-        String deleteOut = "delete from outs where tx_hash=?";
-        String deleteAddressesTx = "delete from addresses_txs where tx_hash=?";
-        String inSql = "select prev_tx_hash,prev_out_sn from ins where tx_hash=?";
-        String existOtherIn = "select count(0) cnt from ins where prev_tx_hash=? and prev_out_sn=?";
-        String updatePrevOut = "update outs set out_status=? where tx_hash=? and out_sn=?";
-        final List<Object[]> needUpdateOuts = new ArrayList<Object[]>();
+        String               deleteTx          = "delete from txs where tx_hash=?";
+        String               deleteIn          = "delete from ins where tx_hash=?";
+        String               deleteOut         = "delete from outs where tx_hash=?";
+        String               deleteAddressesTx = "delete from addresses_txs where tx_hash=?";
+        String               inSql             = "select prev_tx_hash,prev_out_sn from ins where tx_hash=?";
+        String               existOtherIn      = "select count(0) cnt from ins where prev_tx_hash=? and prev_out_sn=?";
+        String               updatePrevOut     = "update outs set out_status=? where tx_hash=? and out_sn=?";
+        final List<Object[]> needUpdateOuts    = new ArrayList<Object[]>();
         this.execQueryLoop(db, inSql, new String[]{tx}, new Function<ICursor, Void>() {
             @Nullable
             @Override
             public Void apply(@Nullable ICursor c) {
-                int idColumn = c.getColumnIndex(AbstractDb.InsColumns.PREV_TX_HASH);
+                int    idColumn   = c.getColumnIndex(AbstractDb.InsColumns.PREV_TX_HASH);
                 String prevTxHash = null;
-                int prevOutSn = 0;
+                int    prevOutSn  = 0;
                 if (idColumn != -1) {
                     prevTxHash = c.getString(idColumn);
                 }
@@ -344,10 +349,10 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
                 return null;
             }
         });
-        this.execUpdate(db, deleteAddressesTx, new String[] {tx});
-        this.execUpdate(db, deleteOut, new String[] {tx});
-        this.execUpdate(db, deleteIn, new String[] {tx});
-        this.execUpdate(db, deleteTx, new String[] {tx});
+        this.execUpdate(db, deleteAddressesTx, new String[]{tx});
+        this.execUpdate(db, deleteOut, new String[]{tx});
+        this.execUpdate(db, deleteIn, new String[]{tx});
+        this.execUpdate(db, deleteTx, new String[]{tx});
         for (Object[] array : needUpdateOuts) {
             final boolean[] isExist = {false};
             this.execQueryLoop(db, existOtherIn, new String[]{array[0].toString(), array[1].toString()}, new Function<ICursor, Void>() {
@@ -361,14 +366,14 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
                 }
             });
             if (isExist[0]) {
-                this.execUpdate(db, updatePrevOut, new String[] {"0", array[0].toString(), array[1].toString()});
+                this.execUpdate(db, updatePrevOut, new String[]{"0", array[0].toString(), array[1].toString()});
             }
         }
     }
 
     private List<String> getRelayTx(String txHash) {
         final List<String> relayTxHashes = new ArrayList<String>();
-        String relayTxSql = "select distinct tx_hash from ins where prev_tx_hash=?";
+        String             relayTxSql    = "select distinct tx_hash from ins where prev_tx_hash=?";
         this.execQueryLoop(relayTxSql, new String[]{txHash}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -380,6 +385,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         return relayTxHashes;
     }
 
+    @Override
     public boolean isAddressContainsTx(String address, Tx txItem) {
         boolean result = false;
         String sql = "select count(0) from ins a, txs b where a.tx_hash=b.tx_hash and" +
@@ -403,13 +409,13 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         final boolean[] isRecordInRel = {false};
         this.execQueryOneRecord(db, sql, new String[]{Base58.encode(txItem.getTxHash()), address}
                 , new Function<ICursor, Void>() {
-            @Nullable
-            @Override
-            public Void apply(@Nullable ICursor c) {
-                isRecordInRel[0] = c.getInt(0) > 0;
-                return null;
-            }
-        });
+                    @Nullable
+                    @Override
+                    public Void apply(@Nullable ICursor c) {
+                        isRecordInRel[0] = c.getInt(0) > 0;
+                        return null;
+                    }
+                });
         if (isRecordInRel[0]) {
             return true;
         }
@@ -432,6 +438,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         return result;
     }
 
+    @Override
     public boolean isTxDoubleSpendWithConfirmedTx(Tx tx) {
         String sql = "select count(0) from ins a, txs b where a.tx_hash=b.tx_hash and" +
                 " b.block_no is not null and a.prev_tx_hash=? and a.prev_out_sn=?";
@@ -455,8 +462,8 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
 
     public List<String> getInAddresses(Tx tx) {
         final List<String> result = new ArrayList<String>();
-        String sql = "select out_address from outs where tx_hash=? and out_sn=?";
-        IDb db = this.getReadDb();
+        String             sql    = "select out_address from outs where tx_hash=? and out_sn=?";
+        IDb                db     = this.getReadDb();
         for (In inItem : tx.getIns()) {
             this.execQueryOneRecord(db, sql, new String[]{Base58.encode(inItem.getPrevTxHash())
                     , Integer.toString(inItem.getPrevOutSn())}, new Function<ICursor, Void>() {
@@ -473,17 +480,18 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         return result;
     }
 
+    @Override
     public void confirmTx(int blockNo, List<byte[]> txHashes) {
         if (blockNo == Tx.TX_UNCONFIRMED || txHashes == null) {
             return;
         }
         String updateBlockNoSql = "update txs set block_no=? where tx_hash=?";
-        String existSql = "select count(0) from txs where block_no=? and tx_hash=?";
+        String existSql         = "select count(0) from txs where block_no=? and tx_hash=?";
         String doubleSpendSql = "select a.tx_hash from ins a, ins b where a.prev_tx_hash=b.prev_tx_hash " +
                 "and a.prev_out_sn=b.prev_out_sn and a.tx_hash<>b.tx_hash and b.tx_hash=?";
-        String blockTimeSql = "select block_time from blocks where block_no=?";
+        String blockTimeSql                      = "select block_time from blocks where block_no=?";
         String updateTxTimeThatMoreThanBlockTime = "update txs set tx_time=? where block_no=? and tx_time>?";
-        IDb db = this.getWriteDb();
+        IDb    db                                = this.getWriteDb();
         db.beginTransaction();
         for (byte[] txHash : txHashes) {
             final int[] cnt = {0};
@@ -498,7 +506,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
             if (cnt[0] > 0) {
                 continue;
             }
-            this.execUpdate(db, updateBlockNoSql, new String[] {Integer.toString(blockNo), Base58.encode(txHash)});
+            this.execUpdate(db, updateBlockNoSql, new String[]{Integer.toString(blockNo), Base58.encode(txHash)});
             final List<String> txHashes1 = new ArrayList<String>();
             this.execQueryLoop(db, doubleSpendSql, new String[]{Base58.encode(txHash)}, new Function<ICursor, Void>() {
                 @Nullable
@@ -542,9 +550,10 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         db.endTransaction();
     }
 
+    @Override
     public void unConfirmTxByBlockNo(int blockNo) {
         String sql = "update txs set block_no=null where block_no>=?";
-        this.execUpdate(sql, new String[] {Integer.toString(blockNo)});
+        this.execUpdate(sql, new String[]{Integer.toString(blockNo)});
     }
 
     @Override
@@ -560,7 +569,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
             public Void apply(@Nullable ICursor c) {
                 int idColumn = c.getColumnIndex("coin_depth");
 
-                Tx txItem = applyCursor(c);
+                Tx  txItem  = applyCursor(c);
                 Out outItem = applyCursorOut(c);
                 if (idColumn != -1) {
                     outItem.setCoinDepth(c.getLong(idColumn));
@@ -590,6 +599,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
 //        return outItems;
 //    }
 
+    @Override
     public long getConfirmedBalanceWithAddress(String address) {
         final long[] sum = {0};
         String unspendOutSql = "select ifnull(sum(a.out_value),0) sum from outs a,txs b where a.tx_hash=b.tx_hash " +
@@ -612,61 +622,62 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         final List<Tx> txList = new ArrayList<Tx>();
 
         final HashMap<Sha256Hash, Tx> txDict = new HashMap<Sha256Hash, Tx>();
-        IDb db = this.getReadDb();
-            String sql = "select b.* from addresses_txs a, txs b " +
-                    "where a.tx_hash=b.tx_hash and a.address=? and b.block_no is null " +
-                    "order by b.block_no desc";
-            this.execQueryLoop(db, sql, new String[]{address}, new Function<ICursor, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable ICursor c) {
-                    Tx txItem = applyCursor(c);
-                    txItem.setIns(new ArrayList<In>());
-                    txItem.setOuts(new ArrayList<Out>());
-                    txList.add(txItem);
-                    txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
-                    return null;
+        IDb                           db     = this.getReadDb();
+        String sql = "select b.* from addresses_txs a, txs b " +
+                "where a.tx_hash=b.tx_hash and a.address=? and b.block_no is null " +
+                "order by b.block_no desc";
+        this.execQueryLoop(db, sql, new String[]{address}, new Function<ICursor, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable ICursor c) {
+                Tx txItem = applyCursor(c);
+                txItem.setIns(new ArrayList<In>());
+                txItem.setOuts(new ArrayList<Out>());
+                txList.add(txItem);
+                txDict.put(new Sha256Hash(txItem.getTxHash()), txItem);
+                return null;
+            }
+        });
+        sql = "select b.tx_hash,b.in_sn,b.prev_tx_hash,b.prev_out_sn " +
+                "from addresses_txs a, ins b, txs c " +
+                "where a.tx_hash=b.tx_hash and b.tx_hash=c.tx_hash and c.block_no is null and a.address=? "
+                + "order by b.tx_hash ,b.in_sn";
+        this.execQueryLoop(db, sql, new String[]{address}, new Function<ICursor, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable ICursor c) {
+                In inItem = applyCursorIn(c);
+                Tx tx     = txDict.get(new Sha256Hash(inItem.getTxHash()));
+                if (tx != null) {
+                    tx.getIns().add(inItem);
                 }
-            });
-            sql = "select b.tx_hash,b.in_sn,b.prev_tx_hash,b.prev_out_sn " +
-                    "from addresses_txs a, ins b, txs c " +
-                    "where a.tx_hash=b.tx_hash and b.tx_hash=c.tx_hash and c.block_no is null and a.address=? "
-                    + "order by b.tx_hash ,b.in_sn";
-            this.execQueryLoop(db, sql, new String[]{address}, new Function<ICursor, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable ICursor c) {
-                    In inItem = applyCursorIn(c);
-                    Tx tx = txDict.get(new Sha256Hash(inItem.getTxHash()));
-                    if (tx != null) {
-                        tx.getIns().add(inItem);
-                    }
-                    return null;
-                }
-            });
+                return null;
+            }
+        });
 
-            sql = "select b.tx_hash,b.out_sn,b.out_value,b.out_address " +
-                    "from addresses_txs a, outs b, txs c " +
-                    "where a.tx_hash=b.tx_hash and b.tx_hash=c.tx_hash and c.block_no is null and a.address=? "
-                    + "order by b.tx_hash,b.out_sn";
-            this.execQueryLoop(db, sql, new String[]{address}, new Function<ICursor, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable ICursor c) {
-                    Out out = applyCursorOut(c);
-                    Tx tx = txDict.get(new Sha256Hash(out.getTxHash()));
-                    if (tx != null) {
-                        tx.getOuts().add(out);
-                    }
-                    return null;
+        sql = "select b.tx_hash,b.out_sn,b.out_value,b.out_address " +
+                "from addresses_txs a, outs b, txs c " +
+                "where a.tx_hash=b.tx_hash and b.tx_hash=c.tx_hash and c.block_no is null and a.address=? "
+                + "order by b.tx_hash,b.out_sn";
+        this.execQueryLoop(db, sql, new String[]{address}, new Function<ICursor, Void>() {
+            @Nullable
+            @Override
+            public Void apply(@Nullable ICursor c) {
+                Out out = applyCursorOut(c);
+                Tx  tx  = txDict.get(new Sha256Hash(out.getTxHash()));
+                if (tx != null) {
+                    tx.getOuts().add(out);
                 }
-            });
+                return null;
+            }
+        });
         return txList;
     }
 
+    @Override
     public int txCount(String address) {
         final int[] result = {0};
-        String sql = "select count(0) cnt from addresses_txs where address=?";
+        String      sql    = "select count(0) cnt from addresses_txs where address=?";
         this.execQueryOneRecord(sql, new String[]{address}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -681,6 +692,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         return result[0];
     }
 
+    @Override
     public long totalReceive(String address) {
         final long[] result = {0};
         String sql = "select sum(aa.receive-ifnull(bb.send,0)) sum" +
@@ -703,14 +715,16 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         return result[0];
     }
 
+    @Override
     public void txSentBySelfHasSaw(byte[] txHash) {
         String sql = "update txs set source=source+1 where tx_hash=? and source>=1";
         this.execUpdate(sql, new String[]{Base58.encode(txHash)});
     }
 
+    @Override
     public List<Out> getOuts() {
         final List<Out> outItemList = new ArrayList<Out>();
-        String sql = "select * from outs ";
+        String          sql         = "select * from outs ";
         this.execQueryLoop(sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -786,6 +800,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
 //        return result;
 //    }
 
+    @Override
     public void clearAllTx() {
 //        SQLiteDatabase db = mDb.getWritableDatabase();
         IDb db = this.getWriteDb();
@@ -806,6 +821,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         db.endTransaction();
     }
 
+    @Override
     public void completeInSignature(List<In> ins) {
         IDb db = this.getWriteDb();
         db.beginTransaction();
@@ -817,6 +833,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         db.endTransaction();
     }
 
+    @Override
     public int needCompleteInSignature(String address) {
         final int[] result = {0};
         String sql = "select max(txs.block_no) from outs,ins,txs where outs.out_address=? " +
@@ -885,7 +902,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
     }
 
     public static In applyCursorIn(ICursor c) {
-        In inItem = new In();
+        In  inItem   = new In();
         int idColumn = c.getColumnIndex(AbstractDb.InsColumns.TX_HASH);
         if (idColumn != -1) {
             try {
@@ -929,7 +946,7 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
     }
 
     public static Out applyCursorOut(ICursor c) {
-        Out outItem = new Out();
+        Out outItem  = new Out();
         int idColumn = c.getColumnIndex(AbstractDb.OutsColumns.TX_HASH);
         if (idColumn != -1) {
             try {
@@ -999,8 +1016,8 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
     }
 
     public void insertTx(IDb db, Tx txItem) {
-        final int[] cnt = {0};
-        String existSql = "select count(0) cnt from txs where tx_hash=?";
+        final int[] cnt      = {0};
+        String      existSql = "select count(0) cnt from txs where tx_hash=?";
         this.execQueryOneRecord(db, existSql, new String[]{Base58.encode(txItem.getTxHash())}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -1023,43 +1040,43 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
 
 
     public List<AddressTx> insertIn(IDb db, final Tx txItem) {
-        final List<AddressTx> addressTxes = new ArrayList<AddressTx>();
-        String existSql = "select count(0) cnt from ins where tx_hash=? and in_sn=?";
-        String outAddressSql = "select out_address from outs where tx_hash=? and out_sn=?";
-        String updateOutStatusSql = "update outs set out_status=? where tx_hash=? and out_sn=?";
+        final List<AddressTx> addressTxes        = new ArrayList<AddressTx>();
+        String                existSql           = "select count(0) cnt from ins where tx_hash=? and in_sn=?";
+        String                outAddressSql      = "select out_address from outs where tx_hash=? and out_sn=?";
+        String                updateOutStatusSql = "update outs set out_status=? where tx_hash=? and out_sn=?";
         for (In inItem : txItem.getIns()) {
             final int[] cnt = {0};
             this.execQueryOneRecord(db, existSql, new String[]{Base58.encode(inItem.getTxHash())
-                        , Integer.toString(inItem.getInSn())}
+                                            , Integer.toString(inItem.getInSn())}
                     , new Function<ICursor, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable ICursor c) {
-                    int idColumn = c.getColumnIndex("cnt");
-                    if (idColumn != -1) {
-                        cnt[0] = c.getInt(idColumn);
-                    }
-                    return null;
-                }
-            });
+                        @Nullable
+                        @Override
+                        public Void apply(@Nullable ICursor c) {
+                            int idColumn = c.getColumnIndex("cnt");
+                            if (idColumn != -1) {
+                                cnt[0] = c.getInt(idColumn);
+                            }
+                            return null;
+                        }
+                    });
             if (cnt[0] == 0) {
                 this.insertInToDb(db, inItem);
             }
 
             this.execQueryLoop(db, outAddressSql, new String[]{Base58.encode(inItem.getPrevTxHash())
-                        , Integer.toString(inItem.getPrevOutSn())}
+                                       , Integer.toString(inItem.getPrevOutSn())}
                     , new Function<ICursor, Void>() {
-                @Nullable
-                @Override
-                public Void apply(@Nullable ICursor c) {
-                    int idColumn = c.getColumnIndex("out_address");
-                    if (idColumn != -1) {
-                        addressTxes.add(new AddressTx(c.getString(idColumn), Base58.encode(txItem
-                                .getTxHash())));
-                    }
-                    return null;
-                }
-            });
+                        @Nullable
+                        @Override
+                        public Void apply(@Nullable ICursor c) {
+                            int idColumn = c.getColumnIndex("out_address");
+                            if (idColumn != -1) {
+                                addressTxes.add(new AddressTx(c.getString(idColumn), Base58.encode(txItem
+                                                                                                           .getTxHash())));
+                            }
+                            return null;
+                        }
+                    });
 
             this.execUpdate(db, updateOutStatusSql, new String[]{Integer.toString(Out.OutStatus.spent.getValue()), Base58
                     .encode(inItem.getPrevTxHash()), Integer.toString(inItem.getPrevOutSn())});
@@ -1070,13 +1087,13 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
     protected abstract void insertInToDb(IDb db, In in);
 
     public List<AddressTx> insertOut(IDb db, Tx txItem) {
-        String existSql = "select count(0) cnt from outs where tx_hash=? and out_sn=?";
-        String updateHDAccountIdSql = "update outs set hd_account_id=? where tx_hash=? and out_sn=?";
-        String queryHDAddressSql = "select hd_account_id,path_type,address_index from hd_account_addresses where address=?";
-        String updateHDAddressIssuedSql = "update hd_account_addresses set is_issued=? where path_type=? and address_index<=? and hd_account_id=?";
-        String queryPrevTxHashSql = "select tx_hash from ins where prev_tx_hash=? and prev_out_sn=?";
-        String updateOutStatusSql = "update outs set out_status=? where tx_hash=? and out_sn=?";
-        final List<AddressTx> addressTxes = new ArrayList<AddressTx>();
+        String                existSql                 = "select count(0) cnt from outs where tx_hash=? and out_sn=?";
+        String                updateHDAccountIdSql     = "update outs set hd_account_id=? where tx_hash=? and out_sn=?";
+        String                queryHDAddressSql        = "select hd_account_id,path_type,address_index from hd_account_addresses where address=?";
+        String                updateHDAddressIssuedSql = "update hd_account_addresses set is_issued=? where path_type=? and address_index<=? and hd_account_id=?";
+        String                queryPrevTxHashSql       = "select tx_hash from ins where prev_tx_hash=? and prev_out_sn=?";
+        String                updateOutStatusSql       = "update outs set out_status=? where tx_hash=? and out_sn=?";
+        final List<AddressTx> addressTxes              = new ArrayList<AddressTx>();
         for (final Out outItem : txItem.getOuts()) {
             final int[] cnt = {0};
             this.execQueryOneRecord(db, existSql, new String[]{Base58.encode(outItem.getTxHash()), Integer
@@ -1101,8 +1118,8 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
                 }
             }
             if (outItem.getHDAccountId() > -1) {
-                final int[] tmpHDAccountId = {-1};
-                final int[] tmpPathType = {0};
+                final int[] tmpHDAccountId  = {-1};
+                final int[] tmpPathType     = {0};
                 final int[] tmpAddressIndex = {0};
                 this.execQueryOneRecord(db, queryHDAddressSql, new String[]{outItem.getOutAddress()}, new Function<ICursor, Void>() {
                     @Nullable
@@ -1117,13 +1134,13 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
                 if (tmpHDAccountId[0] > 0) {
                     this.execUpdate(db, updateHDAddressIssuedSql
                             , new String[]{"1", Integer.toString(tmpPathType[0])
-                            , Integer.toString(tmpAddressIndex[0])
-                            , Integer.toString(tmpHDAccountId[0])});
+                                    , Integer.toString(tmpAddressIndex[0])
+                                    , Integer.toString(tmpHDAccountId[0])});
                 }
             }
             if (!Utils.isEmpty(outItem.getOutAddress())) {
                 addressTxes.add(new AddressTx(outItem.getOutAddress(), Base58.encode(txItem
-                        .getTxHash())));
+                                                                                             .getTxHash())));
             }
             final boolean[] isSpentByExistTx = {false};
             this.execQueryOneRecord(db, queryPrevTxHashSql, new String[]{Base58.encode(txItem.getTxHash())
@@ -1147,12 +1164,13 @@ public abstract class AbstractTxProvider extends AbstractProvider implements ITx
         return addressTxes;
     }
 
+    @Override
     public byte[] isIdentify(Tx tx) {
         HashSet<String> result = new HashSet<String>();
 
         for (In in : tx.getIns()) {
-            String queryPrevTxHashSql = "select tx_hash from ins where prev_tx_hash=? and prev_out_sn=?";
-            final HashSet<String> each = new HashSet<String>();
+            String                queryPrevTxHashSql = "select tx_hash from ins where prev_tx_hash=? and prev_out_sn=?";
+            final HashSet<String> each               = new HashSet<String>();
             this.execQueryOneRecord(this.getReadDb(), queryPrevTxHashSql, new String[]{Base58.encode(in.getPrevTxHash())
                     , Integer.toString(in.getPrevOutSn())}, new Function<ICursor, Void>() {
                 @Nullable

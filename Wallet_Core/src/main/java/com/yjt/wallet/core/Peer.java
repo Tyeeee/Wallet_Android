@@ -157,9 +157,10 @@ public class Peer extends PeerSocketHandler {
             log.info("peer[{}:{}] call connect", this.peerAddress.getHostAddress(), this.peerPort);
             state = State.Connecting;
             if (!NioClientManager.instance().isRunning()) {
-                if (NioClientManager.instance().startAndWait() != Service.State.RUNNING) {
-                    NioClientManager.instance().startUpError();
-                }
+                //TODO No Enter
+//                if (NioClientManager.instance().startAndWait() != Service.State.RUNNING) {
+//                    NioClientManager.instance().startUpError();
+//                }
             }
             setTimeoutEnabled(true);
             setSocketTimeout(TimeOutDelay);

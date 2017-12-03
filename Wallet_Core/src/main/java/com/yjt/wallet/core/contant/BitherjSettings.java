@@ -16,7 +16,7 @@
 
 package com.yjt.wallet.core.contant;
 
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.utils.Utils;
 
 import org.spongycastle.util.encoders.Hex;
 
@@ -27,16 +27,16 @@ public class BitherjSettings {
     public static final boolean LOG_DEBUG = true;
     public static final boolean DEV_DEBUG = true;
 
-    public static final int BITHER_DESKTOP_NETWORK_SOCKET = 8329;
+    public static final int BITHER_DESKTOP_NETWORK_SOCKET    = 8329;
     public static final int BITHER_ENTERPRISE_NETWORK_SOCKET = 8328;
-    public static final int BITHER_DAEMON_NETWORK_SOCKET = 8327;
+    public static final int BITHER_DAEMON_NETWORK_SOCKET     = 8327;
 
-    public static final int PROTOCOL_VERSION = 70001;
+    public static final int PROTOCOL_VERSION  = 70001;
     public static final int MIN_PROTO_VERSION = 70001;
 
-    public static final int MAX_TX_SIZE = 100000;
+    public static final int MAX_TX_SIZE      = 100000;
     public static final int COMPRESS_OUT_NUM = 5;
-    public static final int TX_PAGE_SIZE = 20;
+    public static final int TX_PAGE_SIZE     = 20;
 
     public static final String DONATE_ADDRESS = "1BitherUnNvB2NsfxMnbS35kS3DTPr7PW5";
 
@@ -52,15 +52,15 @@ public class BitherjSettings {
     public static final String ID_MAINNET = "org.bitcoin.production";
 
 
-    public static final BigInteger proofOfWorkLimit = Utils.decodeCompactBits(0x1d00ffffL);
-    public static final int port = 8333;
-    public static final long packetMagic = 0xf9beb4d9L;
-    public static final int addressHeader = 0;
-    public static final int p2shHeader = 5;
-    public static final int dumpedPrivateKeyHeader = 128;
-    public static final int TARGET_TIMESPAN = 14 * 24 * 60 * 60;  // 2 weeks per difficulty cycle, on average.
-    public static final int TARGET_SPACING = 10 * 60;  // 10 minutes per block.
-    public static final int INTERVAL = TARGET_TIMESPAN / TARGET_SPACING;
+    public static final BigInteger proofOfWorkLimit       = Utils.decodeCompactBits(0x1d00ffffL);
+    public static final int        port                   = 8333;
+    public static final long       packetMagic            = 0xf9beb4d9L;
+    public static final int        addressHeader          = 0;
+    public static final int        p2shHeader             = 5;
+    public static final int        dumpedPrivateKeyHeader = 128;
+    public static final int        TARGET_TIMESPAN        = 14 * 24 * 60 * 60;  // 2 weeks per difficulty cycle, on average.
+    public static final int        TARGET_SPACING         = 10 * 60;  // 10 minutes per block.
+    public static final int        INTERVAL               = TARGET_TIMESPAN / TARGET_SPACING;
 
 
     public static final long TX_UNCONFIRMED = Long.MAX_VALUE;
@@ -72,8 +72,8 @@ public class BitherjSettings {
     /**
      * The depth of blocks required for a coinbase transaction to be spendable.
      */
-    public static final int spendableCoinbaseDepth = 100;
-    public static final String[] dnsSeeds = new String[]{
+    public static final int      spendableCoinbaseDepth = 100;
+    public static final String[] dnsSeeds               = new String[]{
             "seed.bitcoin.sipa.be",        // Pieter Wuille
             "dnsseed.bluematt.me",         // Matt Corallo
             "seed.bitcoinstats.com",       // Chris Decker
@@ -84,11 +84,11 @@ public class BitherjSettings {
 
     public static final long MAX_MONEY = 21000000l * 100000000l;
 
-    public static final byte[] GENESIS_BLOCK_HASH = Utils.reverseBytes(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
-    public static final int BLOCK_DIFFICULTY_INTERVAL = 2016;
-    public static final int BITCOIN_REFERENCE_BLOCK_HEIGHT = 250000;
-    public static final int MaxPeerConnections = 6;
-    public static final int MaxPeerBackgroundConnections = 2;
+    public static final byte[] GENESIS_BLOCK_HASH             = Utils.reverseBytes(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+    public static final int    BLOCK_DIFFICULTY_INTERVAL      = 2016;
+    public static final int    BITCOIN_REFERENCE_BLOCK_HEIGHT = 250000;
+    public static final int    MaxPeerConnections             = 6;
+    public static final int    MaxPeerBackgroundConnections   = 2;
 
     public static enum AppMode {
         COLD, HOT
@@ -98,17 +98,18 @@ public class BitherjSettings {
         BLOCKCHAIN_INFO(1), BITHER_NET(0);
 
         private int value;
-        ApiConfig(int value){
+
+        ApiConfig(int value) {
             this.value = value;
         }
 
-        public int value(){
+        public int value() {
             return value;
         }
     }
 
     public static final String PRIVATE_KEY_FILE_NAME = "%s/%s.key";
-    public static final String WATCH_ONLY_FILE_NAME = "%s/%s.pub";
+    public static final String WATCH_ONLY_FILE_NAME  = "%s/%s.pub";
 
     public static final boolean ensureMinRequiredFee = true;
 

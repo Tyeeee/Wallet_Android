@@ -16,17 +16,17 @@
 
 package com.yjt.wallet.core.api;
 
-import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.api.http.HttpGetResponse;
+import com.yjt.wallet.core.api.http.BitherUrl;
+import com.yjt.wallet.core.api.http.HttpGetResponse;
 
 import org.json.JSONObject;
 
 public class GetExchangeTickerApi extends HttpGetResponse<String> {
 
-    private static final String CURRENCY_RATE = "currency_rate";
+    private static final String CURRENCY_RATE   = "currency_rate";
     private static final String CURRENCIES_RATE = "currencies_rate";
 
-    private double mCurrencyRate;
+    private double     mCurrencyRate;
     private JSONObject mCurrenciesRate;
 
     public GetExchangeTickerApi() {

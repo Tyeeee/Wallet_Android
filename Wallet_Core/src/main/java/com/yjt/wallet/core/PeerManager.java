@@ -16,14 +16,14 @@
 
 package com.yjt.wallet.core;
 
-import net.bither.bitherj.AbstractApp;
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.exception.ProtocolException;
-import net.bither.bitherj.net.NioClientManager;
-import net.bither.bitherj.utils.DnsDiscovery;
-import net.bither.bitherj.utils.Sha256Hash;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.contant.AbstractApp;
+import com.yjt.wallet.core.contant.BitherjSettings;
+import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.exception.ProtocolException;
+import com.yjt.wallet.core.net.NioClientManager;
+import com.yjt.wallet.core.utils.DnsDiscovery;
+import com.yjt.wallet.core.utils.Sha256Hash;
+import com.yjt.wallet.core.utils.Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +49,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class PeerManager {
 
-    public static final String ConnectedChangeBroadcast = PeerManager.class.getPackage().getName
+    public static final  String ConnectedChangeBroadcast  = PeerManager.class.getPackage().getName
             () + ".peer_manager_connected_change";
-    private static final Logger log = LoggerFactory.getLogger(PeerManager.class);
-    private static final int MAX_CONNECT_FAILURE_COUNT = 6;
+    private static final Logger log                       = LoggerFactory.getLogger(PeerManager.class);
+    private static final int    MAX_CONNECT_FAILURE_COUNT = 6;
 
-    private static final int MaxPeerCount = 100;
+    private static final int MaxPeerCount      = 100;
     private static final int MaxConnectFailure = 20;
 
     private static Object newInstanceLock = new Object();
@@ -71,19 +71,19 @@ public class PeerManager {
 //    public long earliestKeyTime;
 
     private BloomFilter bloomFilter;
-    private int bloomFilterElementCount;
-    private double filterFpRate;
+    private int         bloomFilterElementCount;
+    private double      filterFpRate;
 
-    private int connectFailure;
-    private final HashSet<Peer> connectedPeers;
-    private final HashSet<Peer> abandonPeers;
+    private       int                                connectFailure;
+    private final HashSet<Peer>                      connectedPeers;
+    private final HashSet<Peer>                      abandonPeers;
     private final HashMap<Sha256Hash, HashSet<Peer>> txRelays;
-    private final HashMap<Sha256Hash, Tx> publishedTx;
+    private final HashMap<Sha256Hash, Tx>            publishedTx;
 
     private boolean synchronizing;
-    private Peer downloadingPeer;
+    private Peer    downloadingPeer;
 
-    private Timer syncTimeOutTimer;
+    private Timer                      syncTimeOutTimer;
     private HashMap<Sha256Hash, Timer> publishTxTimeoutTimers;
 
     private boolean onlyBroadcasting = false;
@@ -246,7 +246,7 @@ public class PeerManager {
 
     private HashSet<Peer> getPeersFromDns() {
         HashSet<Peer> peers = new HashSet<Peer>();
-        Peer[] ps = DnsDiscovery.instance().getPeers(5, TimeUnit.SECONDS);
+        Peer[]        ps    = DnsDiscovery.instance().getPeers(5, TimeUnit.SECONDS);
         Collections.addAll(peers, ps);
         AbstractDb.peerProvider.addPeers(new ArrayList<Peer>(peers));
         return peers;
@@ -389,7 +389,7 @@ public class PeerManager {
                                     (), null);
                         } else {
                             dp.sendGetHeadersMessage(BlockChain.getInstance()
-                                    .getBlockLocatorArray(), null);
+                                                             .getBlockLocatorArray(), null);
                         }
                         downloadingPeer.setSynchronising(true);
                         syncStartHeight = getLastBlockHeight();
@@ -544,7 +544,7 @@ public class PeerManager {
                     // requested using the old one
                     if (downloadingPeer != null && BlockChain.getInstance().lastBlock != null) {
                         downloadingPeer.refetchBlocksFrom(new Sha256Hash(BlockChain.getInstance()
-                                .lastBlock.getBlockHash()));
+                                                                                 .lastBlock.getBlockHash()));
                     }
                 }
             }
@@ -583,19 +583,19 @@ public class PeerManager {
                             (blocks);
                     if (relayedCount == blocks.size()) {
                         log.info("Peer {} relay {} block headers OK, last block No.{}, " +
-                                "" + "total block: {}", fromPeer.getPeerAddress().getHostAddress
+                                         "" + "total block: {}", fromPeer.getPeerAddress().getHostAddress
                                 (), relayedCount, BlockChain.getInstance().getLastBlock()
-                                .getBlockNo(), BlockChain.getInstance().getBlockCount());
+                                         .getBlockNo(), BlockChain.getInstance().getBlockCount());
                     } else {
                         abandonPeer(fromPeer);
                         log.info("Peer {} relay {}/{} block headers. drop this peer",
-                                fromPeer.getPeerAddress().getHostAddress(), relayedCount,
-                                blocks.size());
+                                 fromPeer.getPeerAddress().getHostAddress(), relayedCount,
+                                 blocks.size());
                     }
                 } catch (Exception e) {
                     abandonPeer(fromPeer);
                     log.warn("Peer {} relay block Error. Drop it",
-                            fromPeer.getPeerAddress().getHostAddress());
+                             fromPeer.getPeerAddress().getHostAddress());
                 }
                 sendSyncProgress();
                 if (getLastBlockHeight() == fromPeer.getVersionLastBlockHeight()) {
@@ -657,14 +657,14 @@ public class PeerManager {
                     } else {
                         abandonPeer(fromPeer);
                         log.warn("Peer {} relay block {} failed, drop this peer",
-                                fromPeer.getPeerAddress().getHostAddress(),
-                                Utils.hashToString(block.getBlockHash()));
+                                 fromPeer.getPeerAddress().getHostAddress(),
+                                 Utils.hashToString(block.getBlockHash()));
                     }
                 } catch (ProtocolException e) {
                     abandonPeer(fromPeer);
                     log.warn("Peer {} relay block {} error, drop this peer",
-                            fromPeer.getPeerAddress().getHostAddress(),
-                            Utils.hashToString(block.getBlockHash()));
+                             fromPeer.getPeerAddress().getHostAddress(),
+                             Utils.hashToString(block.getBlockHash()));
                 }
                 sendSyncProgress();
                 if (block.getBlockNo() == fromPeer.getVersionLastBlockHeight() && block
@@ -689,9 +689,9 @@ public class PeerManager {
                                 .getBlockNo()) {
                     Block lastBlock = BlockChain.getInstance().getLastBlock();
                     log.info("Peer {} relay new best block No.{}, hash: {}, txs: {}",
-                            fromPeer.getPeerAddress().getHostAddress(), lastBlock.getBlockNo(),
-                            Utils.hashToString(lastBlock.getBlockHash()),
-                            lastBlock.getTxHashes() == null ? 0 : lastBlock.getTxHashes().size());
+                             fromPeer.getPeerAddress().getHostAddress(), lastBlock.getBlockNo(),
+                             Utils.hashToString(lastBlock.getBlockHash()),
+                             lastBlock.getTxHashes() == null ? 0 : lastBlock.getTxHashes().size());
                     AbstractApp.notificationService.sendLastBlockChange();
                 }
             }
@@ -724,9 +724,9 @@ public class PeerManager {
                     int relayedCnt = BlockChain.getInstance().relayedBlocks(blockList);
                     if (relayedCnt > 0) {
                         log.info("Peer {} relay {} block OK, last block No.{}, total block: {}",
-                                fromPeer.getPeerAddress().getHostAddress(), relayedCnt,
-                                BlockChain.getInstance().getLastBlock().getBlockNo(),
-                                BlockChain.getInstance().getBlockCount());
+                                 fromPeer.getPeerAddress().getHostAddress(), relayedCnt,
+                                 BlockChain.getInstance().getLastBlock().getBlockNo(),
+                                 BlockChain.getInstance().getBlockCount());
                         sendSyncProgress();
                         if (BlockChain.getInstance().getLastBlock().getBlockNo() >= fromPeer
                                 .getVersionLastBlockHeight()) {
@@ -736,32 +736,32 @@ public class PeerManager {
                         }
 
                         if (BlockChain.getInstance().singleBlocks.get(BlockChain.getInstance()
-                                .getLastBlock().getBlockHash()) != null) {
+                                                                              .getLastBlock().getBlockHash()) != null) {
                             Block b = BlockChain.getInstance().singleBlocks.get(BlockChain
-                                    .getInstance().getLastBlock().getBlockHash());
+                                                                                        .getInstance().getLastBlock().getBlockHash());
                             BlockChain.getInstance().singleBlocks.remove(BlockChain.getInstance()
-                                    .getLastBlock().getBlockHash());
+                                                                                 .getLastBlock().getBlockHash());
                             relayedBlock(fromPeer, b);
                         }
 
                         log.info("Peer {} relay new best block No.{}, hash: {}, txs: {}",
-                                fromPeer.getPeerAddress().getHostAddress(),
-                                BlockChain.getInstance().getLastBlock().getBlockNo(),
-                                Utils.hashToString(BlockChain.getInstance().getLastBlock()
-                                        .getBlockHash()), BlockChain.getInstance().getLastBlock()
-                                        .getTxHashes() == null ? 0 : BlockChain.getInstance()
+                                 fromPeer.getPeerAddress().getHostAddress(),
+                                 BlockChain.getInstance().getLastBlock().getBlockNo(),
+                                 Utils.hashToString(BlockChain.getInstance().getLastBlock()
+                                                            .getBlockHash()), BlockChain.getInstance().getLastBlock()
+                                         .getTxHashes() == null ? 0 : BlockChain.getInstance()
                                         .getLastBlock().getTxHashes().size());
                         AbstractApp.notificationService.sendLastBlockChange();
                     } else {
                         abandonPeer(fromPeer);
                         log.info("Peer {} relay {}/{} block. drop this peer",
-                                fromPeer.getPeerAddress().getHostAddress(), relayedCnt,
-                                blocks.size());
+                                 fromPeer.getPeerAddress().getHostAddress(), relayedCnt,
+                                 blocks.size());
                     }
                 } catch (Exception e) {
                     abandonPeer(fromPeer);
                     log.warn("Peer {} relay block Error. Drop it",
-                            fromPeer.getPeerAddress().getHostAddress());
+                             fromPeer.getPeerAddress().getHostAddress());
                 }
             }
         });
@@ -819,7 +819,7 @@ public class PeerManager {
 //                }
                 if (connectedPeers.size() > 0) {
                     Iterator<Peer> iterator = connectedPeers.iterator();
-                    Sha256Hash hash = new Sha256Hash(tx.getTxHash());
+                    Sha256Hash     hash     = new Sha256Hash(tx.getTxHash());
                     if (iterator.hasNext()) {
                         iterator.next();
                     }
@@ -861,8 +861,8 @@ public class PeerManager {
                     outs.add(out);
                 }
             }
-            List<Address> addresses = AddressManager.getInstance().getAllAddresses();
-            int desktopHDMElementCount = 0;
+            List<Address> addresses              = AddressManager.getInstance().getAllAddresses();
+            int           desktopHDMElementCount = 0;
             if (AddressManager.getInstance().hasDesktopHDMKeychain()) {
                 DesktopHDMKeychain desktopHDMKeychain =
                         AddressManager.getInstance().getDesktopHDMKeychains().get(0);
@@ -876,7 +876,7 @@ public class PeerManager {
                     ().elementCountForBloomFilter() : 0) + desktopHDMElementCount + 100;
 
             BloomFilter filter = new BloomFilter(bloomFilterElementCount, filterFpRate, tweak,
-                    BloomFilter.BloomUpdate.UPDATE_ALL);
+                                                 BloomFilter.BloomUpdate.UPDATE_ALL);
 
             for (Address address : addresses) { // add addresses to watch for any tx receiveing
                 // money to the wallet
@@ -922,7 +922,7 @@ public class PeerManager {
 
     private void sendConnectedChangeBroadcast() {
         AbstractApp.notificationService.sendConnectedChangeBroadcast(ConnectedChangeBroadcast,
-                isConnected());
+                                                                     isConnected());
         log.info("peer manager connected changed to " + isConnected());
     }
 
@@ -942,11 +942,11 @@ public class PeerManager {
     }
 
     static class PeerManagerExecutorService extends ThreadPoolExecutor {
-        private static final int TaskCapacity = 5000;
-        private static final int TaskCapacityWaitForRoom = 2000;
-        private ReentrantLock executeLock = new ReentrantLock();
-        private Condition fullCondition = executeLock.newCondition();
-        private boolean isWaiting = false;
+        private static final int           TaskCapacity            = 5000;
+        private static final int           TaskCapacityWaitForRoom = 2000;
+        private              ReentrantLock executeLock             = new ReentrantLock();
+        private              Condition     fullCondition           = executeLock.newCondition();
+        private              boolean       isWaiting               = false;
 
         public PeerManagerExecutorService() {
             super(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
@@ -962,7 +962,7 @@ public class PeerManager {
                     executeLock.lockInterruptibly();
                     fullCondition.await();
                     log.info("PeerManagerExecutor execute again with " + getQueue().size() + " " +
-                            "waiting");
+                                     "waiting");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
@@ -975,7 +975,7 @@ public class PeerManager {
         protected void afterExecute(Runnable r, Throwable t) {
             super.afterExecute(r, t);
             long completed = getCompletedTaskCount();
-            int waiting = getQueue().size();
+            int  waiting   = getQueue().size();
 //            log.info("PeerManagerExecutor finished " + completed + " " +
 //                    "tasks, " + waiting + " tasks remaining");
             if (t == null && r instanceof Future<?>) {

@@ -21,6 +21,7 @@ public class MainActivity extends ActivityViewImplement<MainContract.Presenter> 
     private Button scanIntegral;
     private Button transferIntegral;
     private Button queryIntegral;
+    private Button eccTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class MainActivity extends ActivityViewImplement<MainContract.Presenter> 
         scanIntegral = ViewUtil.getInstance().findViewAttachOnclick(this, R.id.scanIntegral, this);
         transferIntegral = ViewUtil.getInstance().findViewAttachOnclick(this, R.id.transferIntegral, this);
         queryIntegral = ViewUtil.getInstance().findViewAttachOnclick(this, R.id.queryIntegral, this);
+        eccTest = ViewUtil.getInstance().findViewAttachOnclick(this, R.id.eccTest, this);
     }
 
     @Override
@@ -85,6 +87,9 @@ public class MainActivity extends ActivityViewImplement<MainContract.Presenter> 
             case R.id.transferIntegral:
                 break;
             case R.id.queryIntegral:
+                break;
+            case R.id.eccTest:
+                startActivity(ECCTestActivity.class);
                 break;
             default:
                 break;

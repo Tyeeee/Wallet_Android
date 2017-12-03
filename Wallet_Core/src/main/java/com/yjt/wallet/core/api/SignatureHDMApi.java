@@ -16,10 +16,10 @@
 
 package com.yjt.wallet.core.api;
 
-import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.api.http.HttpSetting;
-import net.bither.bitherj.api.http.HttpsPostResponse;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.api.http.BitherUrl;
+import com.yjt.wallet.core.api.http.HttpSetting;
+import com.yjt.wallet.core.api.http.HttpsPostResponse;
+import com.yjt.wallet.core.utils.Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SignatureHDMApi extends HttpsPostResponse<List<byte[]>> {
-    private byte[] password;
+    private byte[]       password;
     private List<byte[]> unSigns;
     private static final Logger log = LoggerFactory.getLogger(SignatureHDMApi.class);
 

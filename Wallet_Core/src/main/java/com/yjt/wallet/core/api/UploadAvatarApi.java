@@ -18,8 +18,8 @@
 package com.yjt.wallet.core.api;
 
 
-import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.api.http.HttpPostResponse;
+import com.yjt.wallet.core.api.http.BitherUrl;
+import com.yjt.wallet.core.api.http.HttpPostResponse;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;

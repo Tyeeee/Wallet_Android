@@ -16,9 +16,9 @@
 
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.exception.ProtocolException;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.contant.BitherjSettings;
+import com.yjt.wallet.core.exception.ProtocolException;
+import com.yjt.wallet.core.utils.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,8 +28,6 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.bither.bitherj.utils.Utils.uint32ToByteStreamLE;
-import static net.bither.bitherj.utils.Utils.uint64ToByteStreamLE;
 
 /**
  * A PeerAddress holds an IP address and port number representing the network location of
@@ -37,12 +35,12 @@ import static net.bither.bitherj.utils.Utils.uint64ToByteStreamLE;
  */
 public class PeerAddress extends ChildMessage {
     private static final long serialVersionUID = 7501293709324197411L;
-    public static final int MESSAGE_SIZE = 30;
+    public static final  int  MESSAGE_SIZE     = 30;
 
     private InetAddress addr;
-    private int port;
-    private BigInteger services;
-    private long time;
+    private int         port;
+    private BigInteger  services;
+    private long        time;
 
     /**
      * Construct a peer address from a serialized payload.
@@ -55,9 +53,13 @@ public class PeerAddress extends ChildMessage {
      * Construct a peer address from a serialized payload.
      * //     * @param params NetworkParameters object.
      *
-     * @param msg             Bitcoin protocol formatted byte array containing message content.
-     * @param offset          The location of the first msg byte within the array.
-     * @param protocolVersion Bitcoin protocol version.
+     * @param msg
+     *         Bitcoin protocol formatted byte array containing message content.
+     * @param offset
+     *         The location of the first msg byte within the array.
+     * @param protocolVersion
+     *         Bitcoin protocol version.
+     *
      * @throws ProtocolException
      */
     public PeerAddress(byte[] msg, int offset, int protocolVersion, Message parent, int length) throws ProtocolException {
@@ -112,9 +114,9 @@ public class PeerAddress extends ChildMessage {
             //so assumes itself to be up.  For a fuller implementation this needs to be dynamic only if
             //the address refers to this client.
             int secs = (int) (Utils.currentTimeMillis() / 1000);
-            uint32ToByteStreamLE(secs, stream);
+            Utils.uint32ToByteStreamLE(secs, stream);
         }
-        uint64ToByteStreamLE(services, stream);  // nServices.
+        Utils.uint64ToByteStreamLE(services, stream);  // nServices.
         // Java does not provide any utility to map an IPv4 address into IPv6 space, so we have to do it by hand.
         byte[] ipBytes = addr.getAddress();
         if (ipBytes.length == 4) {
@@ -141,10 +143,11 @@ public class PeerAddress extends ChildMessage {
         //   uint64 services   (flags determining what the node can do)
         //   16 bytes ip address
         //   2 bytes port num
-        if (protocolVersion > 31402)
+        if (protocolVersion > 31402) {
             time = readUint32();
-        else
+        } else {
             time = -1;
+        }
         services = readUint64();
         byte[] addrBytes = readBytes(16);
         try {
@@ -174,7 +177,8 @@ public class PeerAddress extends ChildMessage {
 
 
     /**
-     * @param addr the addr to set
+     * @param addr
+     *         the addr to set
      */
     public void setAddr(InetAddress addr) {
         this.addr = addr;
@@ -190,7 +194,8 @@ public class PeerAddress extends ChildMessage {
 
 
     /**
-     * @param port the port to set
+     * @param port
+     *         the port to set
      */
     public void setPort(int port) {
         this.port = port;
@@ -206,7 +211,8 @@ public class PeerAddress extends ChildMessage {
 
 
     /**
-     * @param services the services to set
+     * @param services
+     *         the services to set
      */
     public void setServices(BigInteger services) {
         this.services = services;
@@ -222,7 +228,8 @@ public class PeerAddress extends ChildMessage {
 
 
     /**
-     * @param time the time to set
+     * @param time
+     *         the time to set
      */
     public void setTime(long time) {
         this.time = time;
@@ -236,7 +243,9 @@ public class PeerAddress extends ChildMessage {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof PeerAddress)) return false;
+        if (!(o instanceof PeerAddress)) {
+            return false;
+        }
         PeerAddress other = (PeerAddress) o;
         return other.addr.equals(addr) &&
                 other.port == port &&

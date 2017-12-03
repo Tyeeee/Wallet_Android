@@ -16,7 +16,7 @@
 
 package com.yjt.wallet.core;
 
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.utils.Utils;
 
 import java.io.Serializable;
 
@@ -57,7 +57,7 @@ public class UnSignTransaction implements Serializable {
         if (o instanceof UnSignTransaction) {
             UnSignTransaction unSignTransaction = (UnSignTransaction) o;
             return Utils.compareString(getAddress(),
-                    unSignTransaction.getAddress());
+                                       unSignTransaction.getAddress());
         }
         return super.equals(o);
     }

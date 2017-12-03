@@ -16,8 +16,7 @@
 package com.yjt.wallet.core.crypto;
 
 import com.lambdaworks.crypto.SCrypt;
-
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.utils.Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +33,11 @@ import java.security.SecureRandom;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class KeyCrypterScrypt implements KeyCrypter, Serializable {
-    private static final Logger log = LoggerFactory.getLogger(KeyCrypterScrypt.class);
-    private static final long serialVersionUID = 949662512049152670L;
-    private static final int BITCOINJ_SCRYPT_N = 16384;
-    private static final int BITCOINJ_SCRYPT_R = 8;
-    private static final int BITCOINJ_SCRYPT_P = 1;
+    private static final Logger log               = LoggerFactory.getLogger(KeyCrypterScrypt.class);
+    private static final long   serialVersionUID  = 949662512049152670L;
+    private static final int    BITCOINJ_SCRYPT_N = 16384;
+    private static final int    BITCOINJ_SCRYPT_R = 8;
+    private static final int    BITCOINJ_SCRYPT_P = 1;
 
     private static final SecureRandom secureRandom;
 
@@ -133,7 +132,7 @@ public class KeyCrypterScrypt implements KeyCrypter, Serializable {
             BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
             cipher.init(true, keyWithIv);
             byte[] encryptedBytes = new byte[cipher.getOutputSize(plainBytes.length)];
-            int length = cipher.processBytes(plainBytes, 0, plainBytes.length, encryptedBytes, 0);
+            int    length         = cipher.processBytes(plainBytes, 0, plainBytes.length, encryptedBytes, 0);
 
             cipher.doFinal(encryptedBytes, length);
 
@@ -146,10 +145,15 @@ public class KeyCrypterScrypt implements KeyCrypter, Serializable {
     /**
      * Decrypt bytes previously encrypted with this class.
      *
-     * @param privateKeyToDecode The private key to decrypt
-     * @param aesKey             The AES key to use for decryption
+     * @param privateKeyToDecode
+     *         The private key to decrypt
+     * @param aesKey
+     *         The AES key to use for decryption
+     *
      * @return The decrypted bytes
-     * @throws KeyCrypterException if bytes could not be decoded to a valid key
+     *
+     * @throws KeyCrypterException
+     *         if bytes could not be decoded to a valid key
      */
     @Override
     public byte[] decrypt(EncryptedPrivateKey privateKeyToDecode, KeyParameter aesKey) throws KeyCrypterException {
@@ -163,12 +167,12 @@ public class KeyCrypterScrypt implements KeyCrypter, Serializable {
             BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
             cipher.init(false, keyWithIv);
 
-            byte[] cipherBytes = privateKeyToDecode.getEncryptedBytes();
-            int minimumSize = cipher.getOutputSize(cipherBytes.length);
+            byte[] cipherBytes  = privateKeyToDecode.getEncryptedBytes();
+            int    minimumSize  = cipher.getOutputSize(cipherBytes.length);
             byte[] outputBuffer = new byte[minimumSize];
-            int length1 = cipher.processBytes(cipherBytes, 0, cipherBytes.length, outputBuffer, 0);
-            int length2 = cipher.doFinal(outputBuffer, length1);
-            int actualLength = length1 + length2;
+            int    length1      = cipher.processBytes(cipherBytes, 0, cipherBytes.length, outputBuffer, 0);
+            int    length2      = cipher.doFinal(outputBuffer, length1);
+            int    actualLength = length1 + length2;
 
             byte[] decryptedBytes = new byte[actualLength];
             System.arraycopy(outputBuffer, 0, decryptedBytes, 0, actualLength);

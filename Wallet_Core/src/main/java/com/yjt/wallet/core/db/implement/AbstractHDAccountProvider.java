@@ -17,15 +17,14 @@
 package com.yjt.wallet.core.db.implement;
 
 import com.google.common.base.Function;
-
-import net.bither.bitherj.crypto.PasswordSeed;
-import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.db.IHDAccountProvider;
-import net.bither.bitherj.db.imp.base.ICursor;
-import net.bither.bitherj.db.imp.base.IDb;
-import net.bither.bitherj.exception.AddressFormatException;
-import net.bither.bitherj.utils.Base58;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.crypto.PasswordSeed;
+import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.db.IHDAccountProvider;
+import com.yjt.wallet.core.db.base.ICursor;
+import com.yjt.wallet.core.db.base.IDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
+import com.yjt.wallet.core.utils.Base58;
+import com.yjt.wallet.core.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
 
     @Override
     public String getHDFirstAddress(int hdSeedId) {
-        String sql = "select hd_address from hd_account where hd_account_id=?";
+        String         sql     = "select hd_address from hd_account where hd_account_id=?";
         final String[] address = {null};
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -103,7 +102,8 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
             , String firstAddress, boolean isXrandom, byte[] externalPub, byte[] internalPub);
 
     protected abstract boolean hasPasswordSeed(IDb db);
-//    protected boolean hasPasswordSeed(IDb db) {
+
+    //    protected boolean hasPasswordSeed(IDb db) {
 //        String sql = "select count(0) cnt from password_seed where password_seed is not null";
 //        final int[] count = {0};
 //        this.execQueryOneRecord(db, sql, null, new Function<ICursor, Void>() {
@@ -172,7 +172,7 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
 
     @Override
     public boolean hasMnemonicSeed(int hdAccountId) {
-        String sql = "select count(0) cnt from hd_account where encrypt_mnemonic_seed is not null and hd_account_id=?";
+        String          sql    = "select count(0) cnt from hd_account where encrypt_mnemonic_seed is not null and hd_account_id=?";
         final boolean[] result = {false};
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdAccountId)}, new Function<ICursor, Void>() {
             @Nullable
@@ -202,7 +202,7 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
     @Override
     public byte[] getExternalPub(int hdSeedId) {
         final byte[][] pub = {null};
-        String sql = "select external_pub from hd_account where hd_account_id=?";
+        String         sql = "select external_pub from hd_account where hd_account_id=?";
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -243,7 +243,7 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
     @Override
     public byte[] getInternalPub(int hdSeedId) {
         final byte[][] pub = {null};
-        String sql = "select internal_pub from hd_account where hd_account_id=? ";
+        String         sql = "select internal_pub from hd_account where hd_account_id=? ";
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -285,7 +285,7 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
     @Override
     public String getHDAccountEncryptSeed(int hdSeedId) {
         final String[] hdAccountEncryptSeed = {null};
-        String sql = "select encrypt_seed from hd_account where hd_account_id=? ";
+        String         sql                  = "select encrypt_seed from hd_account where hd_account_id=? ";
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -314,7 +314,7 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
     @Override
     public String getHDAccountEncryptMnemonicSeed(int hdSeedId) {
         final String[] hdAccountMnmonicEncryptSeed = {null};
-        String sql = "select encrypt_mnemonic_seed from hd_account where hd_account_id=? ";
+        String         sql                         = "select encrypt_mnemonic_seed from hd_account where hd_account_id=? ";
         this.execQueryOneRecord(sql, new String[]{Integer.toString(hdSeedId)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -343,7 +343,7 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
     @Override
     public boolean hdAccountIsXRandom(int seedId) {
         final boolean[] result = {false};
-        String sql = "select is_xrandom from hd_account where hd_account_id=?";
+        String          sql    = "select is_xrandom from hd_account where hd_account_id=?";
         this.execQueryOneRecord(sql, new String[]{Integer.toString(seedId)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -373,7 +373,7 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
     @Override
     public List<Integer> getHDAccountSeeds() {
         final List<Integer> hdSeedIds = new ArrayList<Integer>();
-        String sql = "select hd_account_id from hd_account";
+        String              sql       = "select hd_account_id from hd_account";
         this.execQueryLoop(sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -402,7 +402,7 @@ public abstract class AbstractHDAccountProvider extends AbstractProvider impleme
 
     @Override
     public boolean isPubExist(byte[] externalPub, byte[] internalPub) {
-        String sql = "select count(0) cnt from hd_account where external_pub=? or internal_pub=?";
+        String          sql     = "select count(0) cnt from hd_account where external_pub=? or internal_pub=?";
         final boolean[] isExist = {false};
         this.execQueryOneRecord(sql, new String[]{Base58.encode(externalPub), Base58.encode(internalPub)}, new Function<ICursor, Void>() {
             @Nullable

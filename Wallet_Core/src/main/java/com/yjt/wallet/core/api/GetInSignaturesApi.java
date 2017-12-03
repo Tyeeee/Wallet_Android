@@ -18,9 +18,9 @@
 
 package com.yjt.wallet.core.api;
 
-import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.api.http.HttpGetResponse;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.api.http.BitherUrl;
+import com.yjt.wallet.core.api.http.HttpGetResponse;
+import com.yjt.wallet.core.utils.Utils;
 
 public class GetInSignaturesApi extends HttpGetResponse<String> {
 

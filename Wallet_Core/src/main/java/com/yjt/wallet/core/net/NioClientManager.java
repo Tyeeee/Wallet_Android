@@ -50,7 +50,7 @@ public class NioClientManager extends AbstractExecutionThreadService implements
     // with OP_CONNECT
     class SocketChannelAndParser {
         SocketChannel sc;
-        StreamParser parser;
+        StreamParser  parser;
 
         SocketChannelAndParser(SocketChannel sc, StreamParser parser) {
             this.sc = sc;
@@ -64,7 +64,7 @@ public class NioClientManager extends AbstractExecutionThreadService implements
     // Added to/removed from by the individual ConnectionHandler's, thus must by synchronized on
     // its own.
     private final Set<ConnectionHandler> connectedHandlers = Collections.synchronizedSet(new
-            HashSet<ConnectionHandler>());
+                                                                                                 HashSet<ConnectionHandler>());
 
     public static final NioClientManager instance() {
         if (instance == null) {
@@ -79,8 +79,8 @@ public class NioClientManager extends AbstractExecutionThreadService implements
         if (key.isValid() && key.isConnectable()) { // ie a client connection which has finished
             // the initial connect process
             // Create a ConnectionHandler and hook everything together
-            StreamParser parser = (StreamParser) key.attachment();
-            SocketChannel sc = (SocketChannel) key.channel();
+            StreamParser      parser  = (StreamParser) key.attachment();
+            SocketChannel     sc      = (SocketChannel) key.channel();
             ConnectionHandler handler = new ConnectionHandler(parser, key, connectedHandlers);
             try {
                 if (sc.finishConnect()) {
@@ -192,7 +192,8 @@ public class NioClientManager extends AbstractExecutionThreadService implements
             triggerShutdown();
         }
         instance = new NioClientManager();
-        instance.startAndWait();
+        //TODO No Enter
+//        instance.startAndWait();
     }
 
     @Override

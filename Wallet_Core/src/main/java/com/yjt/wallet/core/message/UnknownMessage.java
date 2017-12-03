@@ -16,8 +16,8 @@
 
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.exception.ProtocolException;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.exception.ProtocolException;
+import com.yjt.wallet.core.utils.Utils;
 
 public class UnknownMessage extends EmptyMessage {
     private static final long serialVersionUID = 3614705938207918775L;
@@ -28,6 +28,7 @@ public class UnknownMessage extends EmptyMessage {
         this.name = name;
     }
 
+    @Override
     public String toString() {
         return "Unknown message [" + name + "]: " + (bytes == null ? "" : Utils.bytesToHexString(bytes));
     }

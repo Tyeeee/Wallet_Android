@@ -20,8 +20,7 @@ package com.yjt.wallet.core.crypto.hd;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-
-import net.bither.bitherj.crypto.ECKey;
+import com.yjt.wallet.core.crypto.ECKey;
 
 import org.spongycastle.crypto.digests.SHA512Digest;
 import org.spongycastle.crypto.macs.HMac;
@@ -43,7 +42,7 @@ public final class HDUtils {
 
     static HMac createHmacSha512Digest(byte[] key) {
         SHA512Digest digest = new SHA512Digest();
-        HMac hMac = new HMac(digest);
+        HMac         hMac   = new HMac(digest);
         hMac.init(new KeyParameter(key));
         return hMac;
     }
@@ -86,8 +85,8 @@ public final class HDUtils {
      * Where a letter "H" means hardened key. Spaces are ignored.
      */
     public static List<ChildNumber> parsePath(@Nonnull String path) {
-        String[] parsedNodes = path.replace("M", "").split("/");
-        List<ChildNumber> nodes = new ArrayList<ChildNumber>();
+        String[]          parsedNodes = path.replace("M", "").split("/");
+        List<ChildNumber> nodes       = new ArrayList<ChildNumber>();
 
         for (String n : parsedNodes) {
             n = n.replaceAll(" ", "");

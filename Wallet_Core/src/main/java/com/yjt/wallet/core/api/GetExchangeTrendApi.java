@@ -16,17 +16,16 @@
 
 package com.yjt.wallet.core.api;
 
-
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.api.http.HttpGetResponse;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.api.http.BitherUrl;
+import com.yjt.wallet.core.api.http.HttpGetResponse;
+import com.yjt.wallet.core.contant.BitherjSettings;
+import com.yjt.wallet.core.utils.Utils;
 
 public class GetExchangeTrendApi extends HttpGetResponse<String> {
 
     public GetExchangeTrendApi(BitherjSettings.MarketType marketType) {
         String url = Utils.format(BitherUrl.BITHER_TREND_URL,
-                BitherjSettings.getMarketValue(marketType));
+                                  BitherjSettings.getMarketValue(marketType));
         setUrl(url);
 
     }

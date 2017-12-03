@@ -16,10 +16,10 @@
 
 package com.yjt.wallet.core.db;
 
-import net.bither.bitherj.core.Peer;
+
+import com.yjt.wallet.core.Peer;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
 
 public interface IPeerProvider {

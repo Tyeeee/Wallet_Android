@@ -16,7 +16,7 @@
 
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.exception.ProtocolException;
+import com.yjt.wallet.core.exception.ProtocolException;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -17,9 +17,8 @@
 package com.yjt.wallet.core.crypto.hd;
 
 import com.google.common.collect.ImmutableList;
-
-import net.bither.bitherj.crypto.ECKey;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.crypto.ECKey;
+import com.yjt.wallet.core.utils.Utils;
 
 import org.spongycastle.crypto.macs.HMac;
 import org.spongycastle.math.ec.ECPoint;
@@ -55,8 +54,10 @@ public final class HDKeyDerivation {
      * broken by attackers (this is not theoretical, people have had money stolen that way). This method checks
      * that the given seed is at least 64 bits long.
      *
-     * @throws HDDerivationException    if generated master key is invalid (private key 0 or >= n).
-     * @throws IllegalArgumentException if the seed is less than 8 bytes and could be brute forced.
+     * @throws HDDerivationException
+     *         if generated master key is invalid (private key 0 or >= n).
+     * @throws IllegalArgumentException
+     *         if the seed is less than 8 bytes and could be brute forced.
      */
     public static DeterministicKey createMasterPrivateKey(byte[] seed) throws HDDerivationException {
         checkArgument(seed.length > 8, "Seed is too short and could be brute forced");
@@ -77,7 +78,8 @@ public final class HDKeyDerivation {
     }
 
     /**
-     * @throws HDDerivationException if privKeyBytes is invalid (0 or >= n).
+     * @throws HDDerivationException
+     *         if privKeyBytes is invalid (0 or >= n).
      */
     public static DeterministicKey createMasterPrivKeyFromBytes(byte[] privKeyBytes, byte[] chainCode) throws HDDerivationException {
         BigInteger priv = new BigInteger(1, privKeyBytes);
@@ -118,9 +120,9 @@ public final class HDKeyDerivation {
      * hardened derivation or not. If derivation fails, tries a next child.
      */
     public static DeterministicKey deriveThisOrNextChildKey(DeterministicKey parent, int childNumber) {
-        int nAttempts = 0;
-        ChildNumber child = new ChildNumber(childNumber);
-        boolean isHardened = child.isHardened();
+        int         nAttempts  = 0;
+        ChildNumber child      = new ChildNumber(childNumber);
+        boolean     isHardened = child.isHardened();
         while (nAttempts < MAX_CHILD_DERIVATION_ATTEMPTS) {
             try {
                 child = new ChildNumber(child.num() + nAttempts, isHardened);
@@ -134,8 +136,9 @@ public final class HDKeyDerivation {
     }
 
     /**
-     * @throws HDDerivationException if private derivation is attempted for a public-only parent key, or
-     *                               if the resulting derived key is invalid (eg. private key == 0).
+     * @throws HDDerivationException
+     *         if private derivation is attempted for a public-only parent key, or
+     *         if the resulting derived key is invalid (eg. private key == 0).
      */
     public static DeterministicKey deriveChildKey(DeterministicKey parent, ChildNumber childNumber) throws HDDerivationException {
         if (parent.isPubKeyOnly()) {
@@ -170,12 +173,12 @@ public final class HDKeyDerivation {
         data.putInt(childNumber.i());
         byte[] i = HDUtils.hmacSha512(parent.getChainCode(), data.array());
         assert i.length == 64 : i.length;
-        byte[] il = Arrays.copyOfRange(i, 0, 32);
-        byte[] chainCode = Arrays.copyOfRange(i, 32, 64);
-        BigInteger ilInt = new BigInteger(1, il);
+        byte[]     il        = Arrays.copyOfRange(i, 0, 32);
+        byte[]     chainCode = Arrays.copyOfRange(i, 32, 64);
+        BigInteger ilInt     = new BigInteger(1, il);
         ilInt = ilInt.mod(ECKey.CURVE.getN());
         final BigInteger priv = parent.getPrivKey();
-        BigInteger ki = priv.add(ilInt).mod(ECKey.CURVE.getN());
+        BigInteger       ki   = priv.add(ilInt).mod(ECKey.CURVE.getN());
         assertNonZero(ki, "Illegal derived key: derived private key equals 0.");
         return new RawKeyBytes(ki.toByteArray(), chainCode);
     }
@@ -194,14 +197,14 @@ public final class HDKeyDerivation {
         data.putInt(childNumber.i());
         byte[] i = HDUtils.hmacSha512(parent.getChainCode(), data.array());
         assert i.length == 64 : i.length;
-        byte[] il = Arrays.copyOfRange(i, 0, 32);
-        byte[] chainCode = Arrays.copyOfRange(i, 32, 64);
-        BigInteger ilInt = new BigInteger(1, il);
+        byte[]     il        = Arrays.copyOfRange(i, 0, 32);
+        byte[]     chainCode = Arrays.copyOfRange(i, 32, 64);
+        BigInteger ilInt     = new BigInteger(1, il);
         assertLessThanN(ilInt, "Illegal derived key: I_L >= n");
 
-        final ECPoint G = ECKey.CURVE.getG();
+        final ECPoint    G = ECKey.CURVE.getG();
         final BigInteger N = ECKey.CURVE.getN();
-        ECPoint Ki;
+        ECPoint          Ki;
         switch (mode) {
             case NORMAL:
                 Ki = G.multiply(ilInt).add(parent.getPubKeyPoint());
@@ -226,18 +229,21 @@ public final class HDKeyDerivation {
     }
 
     private static void assertNonZero(BigInteger integer, String errorMessage) {
-        if (integer.equals(BigInteger.ZERO))
+        if (integer.equals(BigInteger.ZERO)) {
             throw new HDDerivationException(errorMessage);
+        }
     }
 
     private static void assertNonInfinity(ECPoint point, String errorMessage) {
-        if (point.equals(ECKey.CURVE.getCurve().getInfinity()))
+        if (point.equals(ECKey.CURVE.getCurve().getInfinity())) {
             throw new HDDerivationException(errorMessage);
+        }
     }
 
     private static void assertLessThanN(BigInteger integer, String errorMessage) {
-        if (integer.compareTo(ECKey.CURVE.getN()) > 0)
+        if (integer.compareTo(ECKey.CURVE.getN()) > 0) {
             throw new HDDerivationException(errorMessage);
+        }
     }
 
     public static class RawKeyBytes {

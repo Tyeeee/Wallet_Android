@@ -16,8 +16,8 @@
 
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.exception.ProtocolException;
-import net.bither.bitherj.utils.VarInt;
+import com.yjt.wallet.core.exception.ProtocolException;
+import com.yjt.wallet.core.utils.VarInt;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -77,15 +77,17 @@ public class RejectMessage extends Message {
         }
 
         static RejectCode fromCode(byte code) {
-            for (RejectCode rejectCode : RejectCode.values())
-                if (rejectCode.code == code)
+            for (RejectCode rejectCode : RejectCode.values()) {
+                if (rejectCode.code == code) {
                     return rejectCode;
+                }
+            }
             return OTHER;
         }
     }
 
     private RejectCode code;
-    private byte[] messageHash;
+    private byte[]     messageHash;
 
     public RejectMessage(byte[] payload) throws ProtocolException {
         super(payload, 0);
@@ -100,8 +102,9 @@ public class RejectMessage extends Message {
         message = readStr();
         code = RejectCode.fromCode(readBytes(1)[0]);
         reason = readStr();
-        if (message.equals("block") || message.equals("tx"))
+        if (message.equals("block") || message.equals("tx")) {
             messageHash = readHash();
+        }
         length = cursor - offset;
     }
 
@@ -114,8 +117,9 @@ public class RejectMessage extends Message {
         byte[] reasonBytes = reason.getBytes("UTF-8");
         stream.write(new VarInt(reasonBytes.length).encode());
         stream.write(reasonBytes);
-        if (message.equals("block") || message.equals("tx"))
+        if (message.equals("block") || message.equals("tx")) {
             stream.write(messageHash);
+        }
     }
 
     /**
@@ -151,18 +155,23 @@ public class RejectMessage extends Message {
     @Override
     public String toString() {
         byte[] hash = getRejectedObjectHash();
-        if (hash != null)
+        if (hash != null) {
             return String.format("Reject: %s %s for reason '%s' (%d)", getRejectedMessage(), getRejectedObjectHash(),
-                    getReasonString(), getReasonCode().code);
-        else
+                                 getReasonString(), getReasonCode().code);
+        } else {
             return String.format("Reject: %s for reason '%s' (%d)", getRejectedMessage(),
-                    getReasonString(), getReasonCode().code);
+                                 getReasonString(), getReasonCode().code);
+        }
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RejectMessage other = (RejectMessage) o;
         return message.equals(other.message) &&
                 code.equals(other.code) &&

@@ -17,10 +17,10 @@
 package com.yjt.wallet.core.api;
 
 
-import net.bither.bitherj.AbstractApp;
-import net.bither.bitherj.api.http.HttpRequestException;
-import net.bither.bitherj.api.http.HttpSetting;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.api.http.HttpRequestException;
+import com.yjt.wallet.core.api.http.HttpSetting;
+import com.yjt.wallet.core.contant.AbstractApp;
+import com.yjt.wallet.core.utils.Utils;
 
 import org.apache.http.cookie.Cookie;
 
@@ -44,10 +44,10 @@ public class DownloadFile {
     private boolean downloadUrlToFile(String urlString, File file)
             throws IOException, HttpRequestException {
         //  disableConnectionReuseIfNecessary();
-        HttpURLConnection urlConnection = null;
-        BufferedOutputStream out = null;
-        BufferedInputStream in = null;
-        OutputStream outputStream = null;
+        HttpURLConnection    urlConnection = null;
+        BufferedOutputStream out           = null;
+        BufferedInputStream  in            = null;
+        OutputStream         outputStream  = null;
         try {
             final URL url = new URL(urlString);
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -65,9 +65,9 @@ public class DownloadFile {
             outputStream = new FaultHidingOutputStream(new FileOutputStream(
                     file));
             in = new BufferedInputStream(urlConnection.getInputStream(),
-                    IO_BUFFER_SIZE);
+                                         IO_BUFFER_SIZE);
             out = new BufferedOutputStream(outputStream,
-                    IO_BUFFER_SIZE);
+                                           IO_BUFFER_SIZE);
 
             int b;
             while ((b = in.read()) != -1) {

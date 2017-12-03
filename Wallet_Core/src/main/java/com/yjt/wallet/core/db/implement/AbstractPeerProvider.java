@@ -17,13 +17,12 @@
 package com.yjt.wallet.core.db.implement;
 
 import com.google.common.base.Function;
-
-import net.bither.bitherj.core.Peer;
-import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.db.IPeerProvider;
-import net.bither.bitherj.db.imp.base.ICursor;
-import net.bither.bitherj.db.imp.base.IDb;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.Peer;
+import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.db.IPeerProvider;
+import com.yjt.wallet.core.db.base.ICursor;
+import com.yjt.wallet.core.db.base.IDb;
+import com.yjt.wallet.core.utils.Utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -37,7 +36,7 @@ public abstract class AbstractPeerProvider extends AbstractProvider implements I
 
     public List<Peer> getAllPeers() {
         final List<Peer> peers = new ArrayList<Peer>();
-        String sql = "select * from peers";
+        String           sql   = "select * from peers";
         this.execQueryLoop(sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -74,8 +73,8 @@ public abstract class AbstractPeerProvider extends AbstractProvider implements I
             }
         }
         if (addItems.size() > 0) {
-            String sql = "insert into peers(peer_address,peer_port,peer_services,peer_timestamp,peer_connected_cnt) values(?,?,?,?,?)";
-            IDb writeDb = this.getWriteDb();
+            String sql     = "insert into peers(peer_address,peer_port,peer_services,peer_timestamp,peer_connected_cnt) values(?,?,?,?,?)";
+            IDb    writeDb = this.getWriteDb();
             writeDb.beginTransaction();
             for (Peer item : addItems) {
                 this.execUpdate(writeDb, sql, new String[]{
@@ -92,13 +91,13 @@ public abstract class AbstractPeerProvider extends AbstractProvider implements I
     @Override
     public void removePeer(InetAddress address) {
         String sql = "delete from peers where peer_address=?";
-        this.execUpdate(sql, new String[] {Long.toString(Utils.parseLongFromAddress(address))});
+        this.execUpdate(sql, new String[]{Long.toString(Utils.parseLongFromAddress(address))});
     }
 
     public void conncetFail(InetAddress address) {
-        long addressLong = Utils.parseLongFromAddress(address);
-        String sql = "select count(0) cnt from peers where peer_address=? and peer_connected_cnt=0";
-        final int[] cnt = {0};
+        long        addressLong = Utils.parseLongFromAddress(address);
+        String      sql         = "select count(0) cnt from peers where peer_address=? and peer_connected_cnt=0";
+        final int[] cnt         = {0};
         this.execQueryOneRecord(sql, new String[]{Long.toString(addressLong)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -112,21 +111,23 @@ public abstract class AbstractPeerProvider extends AbstractProvider implements I
         });
         if (cnt[0] == 0) {
             sql = "update peers set peer_connected_cnt=peer_connected_cnt+1 where peer_address=?";
-            this.execUpdate(sql, new String[] {Long.toString(addressLong)});
+            this.execUpdate(sql, new String[]{Long.toString(addressLong)});
         } else {
             sql = "update peers set peer_connected_cnt=2 where peer_address=?";
             this.execUpdate(sql, new String[]{Long.toString(addressLong)});
         }
     }
 
+    @Override
     public void connectSucceed(InetAddress address) {
-        String sql = "update peers set peer_connected_cnt=?,peer_timestamp=? where peer_address=?";
-        long addressLong = Utils.parseLongFromAddress(address);
-        this.execUpdate(sql, new String[] {"1", Long.toString(new Date().getTime()), Long.toString(addressLong)});
+        String sql         = "update peers set peer_connected_cnt=?,peer_timestamp=? where peer_address=?";
+        long   addressLong = Utils.parseLongFromAddress(address);
+        this.execUpdate(sql, new String[]{"1", Long.toString(System.currentTimeMillis()), Long.toString(addressLong)});
     }
 
+    @Override
     public List<Peer> getPeersWithLimit(int limit) {
-        String sql = "select * from peers order by peer_address limit ?";
+        String           sql          = "select * from peers order by peer_address limit ?";
         final List<Peer> peerItemList = new ArrayList<Peer>();
         this.execQueryLoop(sql, new String[]{Integer.toString(limit)}, new Function<ICursor, Void>() {
             @Nullable
@@ -147,10 +148,11 @@ public abstract class AbstractPeerProvider extends AbstractProvider implements I
         this.execUpdate(sql, new String[]{Integer.toString(Integer.MAX_VALUE), Integer.toString(Integer.MIN_VALUE)});
     }
 
+    @Override
     public void cleanPeers() {
-        int maxPeerSaveCnt = 12;
-        String disconnectingPeerCntSql = "select count(0) cnt from peers where peer_connected_cnt<>1";
-        final int[] disconnectingPeerCnt = {0};
+        int         maxPeerSaveCnt          = 12;
+        String      disconnectingPeerCntSql = "select count(0) cnt from peers where peer_connected_cnt<>1";
+        final int[] disconnectingPeerCnt    = {0};
         this.execQueryOneRecord(disconnectingPeerCntSql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -191,8 +193,8 @@ public abstract class AbstractPeerProvider extends AbstractProvider implements I
     }
 
     private Peer applyCursor(ICursor c) {
-        InetAddress address = null;
-        int idColumn = c.getColumnIndex(AbstractDb.PeersColumns.PEER_ADDRESS);
+        InetAddress address  = null;
+        int         idColumn = c.getColumnIndex(AbstractDb.PeersColumns.PEER_ADDRESS);
         if (idColumn != -1) {
             long addressLong = c.getLong(idColumn);
             try {
@@ -227,6 +229,7 @@ public abstract class AbstractPeerProvider extends AbstractProvider implements I
         return peerItem;
     }
 
+    @Override
     public void recreate() {
         IDb writeDb = this.getWriteDb();
         writeDb.beginTransaction();

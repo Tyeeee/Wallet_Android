@@ -17,10 +17,10 @@
 
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.exception.ProtocolException;
-import net.bither.bitherj.exception.VerificationException;
-import net.bither.bitherj.utils.Utils;
-import net.bither.bitherj.utils.VarInt;
+import com.yjt.wallet.core.exception.ProtocolException;
+import com.yjt.wallet.core.exception.VerificationException;
+import com.yjt.wallet.core.utils.Utils;
+import com.yjt.wallet.core.utils.VarInt;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -67,12 +67,14 @@ public class PartialMerkleTree extends Message {
         super(payloadBytes, offset);
     }
 
+    @Override
     public void bitcoinSerializeToStream(OutputStream stream) throws IOException {
         Utils.uint32ToByteStreamLE(transactionCount, stream);
 
         stream.write(new VarInt(hashes.size()).encode());
-        for (byte[] hash : hashes)
+        for (byte[] hash : hashes) {
             stream.write(hash);
+        }
 
         stream.write(new VarInt(matchedChildBits.length).encode());
         stream.write(matchedChildBits);
@@ -84,8 +86,9 @@ public class PartialMerkleTree extends Message {
 
         int nHashes = (int) readVarInt();
         hashes = new ArrayList<byte[]>(nHashes);
-        for (int i = 0; i < nHashes; i++)
+        for (int i = 0; i < nHashes; i++) {
             hashes.add(readHash());
+        }
 
         int nFlagBytes = (int) readVarInt();
         matchedChildBits = readBytes(nFlagBytes);
@@ -122,15 +125,18 @@ public class PartialMerkleTree extends Message {
                 throw new VerificationException("CPartialMerkleTree overflowed its hash array");
             }
             if (height == 0 && parentOfMatch) // in case of height 0, we have a matched txid
+            {
                 matchedHashes.add(hashes.get(used.hashesUsed));
+            }
             return hashes.get(used.hashesUsed++);
         } else {
             // otherwise, descend into the subtrees to extract matched txids and hashes
             byte[] left = recursiveExtractHashes(height - 1, pos * 2, used, matchedHashes), right;
-            if (pos * 2 + 1 < getTreeWidth(height - 1))
+            if (pos * 2 + 1 < getTreeWidth(height - 1)) {
                 right = recursiveExtractHashes(height - 1, pos * 2 + 1, used, matchedHashes);
-            else
+            } else {
                 right = left;
+            }
             // and combine them before returning
             return Utils.doubleDigestTwoBuffers(
                     left, 0, 32,
@@ -145,38 +151,49 @@ public class PartialMerkleTree extends Message {
      * The returned root should be checked against the
      * merkle root contained in the block header for security.
      *
-     * @param matchedHashes A list which will contain the matched txn (will be cleared)
-     *                      Required to be a LinkedHashSet in order to retain order or transactions in the block
+     * @param matchedHashes
+     *         A list which will contain the matched txn (will be cleared)
+     *         Required to be a LinkedHashSet in order to retain order or transactions in the block
+     *
      * @return the merkle root of this merkle tree
-     * @throws ProtocolException if this partial merkle tree is invalid
+     *
+     * @throws ProtocolException
+     *         if this partial merkle tree is invalid
      */
     public byte[] getTxnHashAndMerkleRoot(List<byte[]> matchedHashes) throws VerificationException {
         matchedHashes.clear();
 
         // An empty set will not work
-        if (transactionCount == 0)
+        if (transactionCount == 0) {
             throw new VerificationException("Got a CPartialMerkleTree with 0 transactions");
+        }
         // check for excessively high numbers of transactions
         if (transactionCount > BlockMessage.MAX_BLOCK_SIZE / 60) // 60 is the lower bound for the size of a serialized CTransaction
+        {
             throw new VerificationException("Got a CPartialMerkleTree with more transactions than is possible");
+        }
         // there can never be more hashes provided than one for every txid
-        if (hashes.size() > transactionCount)
+        if (hashes.size() > transactionCount) {
             throw new VerificationException("Got a CPartialMerkleTree with more hashes than transactions");
+        }
         // there must be at least one bit per node in the partial tree, and at least one node per hash
-        if (matchedChildBits.length * 8 < hashes.size())
+        if (matchedChildBits.length * 8 < hashes.size()) {
             throw new VerificationException("Got a CPartialMerkleTree with fewer matched bits than hashes");
+        }
         // calculate height of tree
         int height = 0;
-        while (getTreeWidth(height) > 1)
+        while (getTreeWidth(height) > 1) {
             height++;
+        }
         // traverse the partial tree
-        ValuesUsed used = new ValuesUsed();
-        byte[] merkleRoot = recursiveExtractHashes(height, 0, used, matchedHashes);
+        ValuesUsed used       = new ValuesUsed();
+        byte[]     merkleRoot = recursiveExtractHashes(height, 0, used, matchedHashes);
         // verify that all bits were consumed (except for the padding caused by serializing it as a byte sequence)
         if ((used.bitsUsed + 7) / 8 != matchedChildBits.length ||
                 // verify that all hashes were consumed
-                used.hashesUsed != hashes.size())
+                used.hashesUsed != hashes.size()) {
             throw new VerificationException("Got a CPartialMerkleTree that didn't need all the data it provided");
+        }
 
         return merkleRoot;
     }

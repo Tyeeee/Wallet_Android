@@ -17,9 +17,8 @@
 package com.yjt.wallet.core.net;
 
 import com.google.common.base.Throwables;
-
-import net.bither.bitherj.message.Message;
-import net.bither.bitherj.utils.Threading;
+import com.yjt.wallet.core.message.Message;
+import com.yjt.wallet.core.utils.Threading;
 
 import org.slf4j.LoggerFactory;
 
@@ -59,20 +58,20 @@ class ConnectionHandler implements MessageWriteTarget {
     // class into non-Java classes.
     private final ReentrantLock lock = Threading.lock("nioConnectionHandler");
     @GuardedBy("lock")
-    private final ByteBuffer readBuff;
+    private final ByteBuffer    readBuff;
     @GuardedBy("lock")
     private final SocketChannel channel;
     @GuardedBy("lock")
-    private final SelectionKey key;
+    private final SelectionKey  key;
     @GuardedBy("lock")
     StreamParser parser;
     @GuardedBy("lock")
     private boolean closeCalled = false;
 
     @GuardedBy("lock")
-    private long bytesToWriteRemaining = 0;
+    private       long                   bytesToWriteRemaining = 0;
     @GuardedBy("lock")
-    private final LinkedList<ByteBuffer> bytesToWrite = new LinkedList<ByteBuffer>();
+    private final LinkedList<ByteBuffer> bytesToWrite          = new LinkedList<ByteBuffer>();
 
     private Set<ConnectionHandler> connectedHandlers;
 
@@ -86,7 +85,7 @@ class ConnectionHandler implements MessageWriteTarget {
         }
         this.parser = parser;
         readBuff = ByteBuffer.allocateDirect(Math.min(Math.max(parser.getMaxMessageSize(),
-                BUFFER_SIZE_LOWER_BOUND), BUFFER_SIZE_UPPER_BOUND));
+                                                               BUFFER_SIZE_LOWER_BOUND), BUFFER_SIZE_UPPER_BOUND));
         parser.setWriteTarget(this); // May callback into us (eg closeConnection() now)
         connectedHandlers = null;
     }

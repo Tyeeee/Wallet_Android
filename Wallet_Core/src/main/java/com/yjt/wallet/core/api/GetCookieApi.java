@@ -16,9 +16,9 @@
 
 package com.yjt.wallet.core.api;
 
-import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.api.http.HttpPostResponse;
-import net.bither.bitherj.api.http.HttpSetting.HttpType;
+import com.yjt.wallet.core.api.http.BitherUrl;
+import com.yjt.wallet.core.api.http.HttpPostResponse;
+import com.yjt.wallet.core.api.http.HttpSetting;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -35,7 +35,7 @@ public class GetCookieApi extends HttpPostResponse<String> {
 
     public GetCookieApi() {
         setUrl(BitherUrl.BITHER_GET_COOKIE_URL);
-        setHttpType(HttpType.GetBitherCookie);
+        setHttpType(HttpSetting.HttpType.GetBitherCookie);
     }
 
     @Override

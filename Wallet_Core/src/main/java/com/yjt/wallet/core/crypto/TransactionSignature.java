@@ -16,7 +16,7 @@
 
 package com.yjt.wallet.core.crypto;
 
-import net.bither.bitherj.exception.VerificationException;
+import com.yjt.wallet.core.exception.VerificationException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -74,8 +74,9 @@ public class TransactionSignature extends ECKey.ECDSASignature {
      */
     public static int calcSigHashValue(SigHash mode, boolean anyoneCanPay) {
         int sighashFlags = mode.ordinal() + 1;
-        if (anyoneCanPay)
+        if (anyoneCanPay) {
             sighashFlags |= SIGHASH_ANYONECANPAY_VALUE;
+        }
         return sighashFlags;
     }
 
@@ -93,35 +94,44 @@ public class TransactionSignature extends ECKey.ECDSASignature {
         // Where R and S are not negative (their first byte has its highest bit not set), and not
         // excessively padded (do not start with a 0 byte, unless an otherwise negative number follows,
         // in which case a single 0 byte is necessary and even required).
-        if (signature.length < 9 || signature.length > 73)
+        if (signature.length < 9 || signature.length > 73) {
             return false;
+        }
 
         int hashType = signature[signature.length - 1] & ((int) (~SIGHASH_ANYONECANPAY_VALUE));
-        if (hashType < (SigHash.ALL.ordinal() + 1) || hashType > (SigHash.SINGLE.ordinal() + 1))
+        if (hashType < (SigHash.ALL.ordinal() + 1) || hashType > (SigHash.SINGLE.ordinal() + 1)) {
             return false;
+        }
 
         //                   "wrong type"                  "wrong length marker"
-        if ((signature[0] & 0xff) != 0x30 || (signature[1] & 0xff) != signature.length - 3)
+        if ((signature[0] & 0xff) != 0x30 || (signature[1] & 0xff) != signature.length - 3) {
             return false;
+        }
 
         int lenR = signature[3] & 0xff;
-        if (5 + lenR >= signature.length || lenR == 0)
+        if (5 + lenR >= signature.length || lenR == 0) {
             return false;
+        }
         int lenS = signature[5 + lenR] & 0xff;
-        if (lenR + lenS + 7 != signature.length || lenS == 0)
+        if (lenR + lenS + 7 != signature.length || lenS == 0) {
             return false;
+        }
 
         //    R value type mismatch          R value negative
-        if (signature[4 - 2] != 0x02 || (signature[4] & 0x80) == 0x80)
+        if (signature[4 - 2] != 0x02 || (signature[4] & 0x80) == 0x80) {
             return false;
-        if (lenR > 1 && signature[4] == 0x00 && (signature[4 + 1] & 0x80) != 0x80)
+        }
+        if (lenR > 1 && signature[4] == 0x00 && (signature[4 + 1] & 0x80) != 0x80) {
             return false; // R value excessively padded
+        }
 
         //       S value type mismatch                    S value negative
-        if (signature[6 + lenR - 2] != 0x02 || (signature[6 + lenR] & 0x80) == 0x80)
+        if (signature[6 + lenR - 2] != 0x02 || (signature[6 + lenR] & 0x80) == 0x80) {
             return false;
-        if (lenS > 1 && signature[6 + lenR] == 0x00 && (signature[6 + lenR + 1] & 0x80) != 0x80)
+        }
+        if (lenS > 1 && signature[6 + lenR] == 0x00 && (signature[6 + lenR + 1] & 0x80) != 0x80) {
             return false; // S value excessively padded
+        }
 
         return true;
     }
@@ -139,12 +149,13 @@ public class TransactionSignature extends ECKey.ECDSASignature {
 
     public SigHash sigHashMode() {
         final int mode = sighashFlags & 0x1f;
-        if (mode == SigHash.NONE.ordinal() + 1)
+        if (mode == SigHash.NONE.ordinal() + 1) {
             return SigHash.NONE;
-        else if (mode == SigHash.SINGLE.ordinal() + 1)
+        } else if (mode == SigHash.SINGLE.ordinal() + 1) {
             return SigHash.SINGLE;
-        else
+        } else {
             return SigHash.ALL;
+        }
     }
 
     /**
@@ -169,8 +180,9 @@ public class TransactionSignature extends ECKey.ECDSASignature {
      */
     public static TransactionSignature decodeFromBitcoin(byte[] bytes, boolean requireCanonical) throws VerificationException {
         // Bitcoin encoding is DER signature + sighash byte.
-        if (requireCanonical && !isEncodingCanonical(bytes))
+        if (requireCanonical && !isEncodingCanonical(bytes)) {
             throw new VerificationException("Signature encoding is not canonical.");
+        }
         ECKey.ECDSASignature sig;
         try {
             sig = ECKey.ECDSASignature.decodeFromDER(bytes);

@@ -2,8 +2,8 @@ package com.yjt.wallet.components.widget.tablayout.listener.implement;
 
 import android.support.v4.view.ViewPager;
 
-import com.hynet.mergepay.components.widget.tablayout.TabLayout;
-import com.hynet.mergepay.components.widget.tablayout.TabStrip;
+import com.yjt.wallet.components.widget.tablayout.TabLayout;
+import com.yjt.wallet.components.widget.tablayout.TabStrip;
 
 public class InternalViewPagerListener implements ViewPager.OnPageChangeListener {
 

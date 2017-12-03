@@ -16,7 +16,7 @@
 
 package com.yjt.wallet.core.api;
 
-import net.bither.bitherj.AbstractApp;
+import com.yjt.wallet.core.contant.AbstractApp;
 
 import org.apache.http.client.CookieStore;
 

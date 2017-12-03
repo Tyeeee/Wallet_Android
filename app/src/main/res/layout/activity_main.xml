@@ -49,4 +49,12 @@
         android:layout_margin="5dp"
         android:text="积分查询"/>
 
+
+    <Button
+        android:id="@+id/eccTest"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="5dp"
+        android:text="ECCTest"/>
+
 </LinearLayout>

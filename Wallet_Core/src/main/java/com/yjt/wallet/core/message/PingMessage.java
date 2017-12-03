@@ -16,14 +16,14 @@
 
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.exception.ProtocolException;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.exception.ProtocolException;
+import com.yjt.wallet.core.utils.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class PingMessage extends Message {
-    private long nonce;
+    private long    nonce;
     private boolean hasNonce;
 
     public PingMessage(byte[] payloadBytes) throws ProtocolException {
@@ -47,9 +47,11 @@ public class PingMessage extends Message {
         this.hasNonce = false;
     }
 
+    @Override
     public void bitcoinSerializeToStream(OutputStream stream) throws IOException {
-        if (hasNonce)
+        if (hasNonce) {
             Utils.int64ToByteStreamLE(nonce, stream);
+        }
     }
 
     @Override

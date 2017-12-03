@@ -75,12 +75,12 @@ public class QRCodeTxTransport implements Serializable {
     public static final int NO_HDM_INDEX = -1;
 
     private List<String> mHashList;
-    private String mMyAddress;
-    private String mToAddress;
-    private long mTo;
-    private long mFee;
-    private long changeAmt;
-    private String changeAddress;
+    private String       mMyAddress;
+    private String       mToAddress;
+    private long         mTo;
+    private long         mFee;
+    private long         changeAmt;
+    private String       changeAddress;
     private int hdmIndex = NO_HDM_INDEX;
     private TxTransportType txTransportType;
 
@@ -170,10 +170,10 @@ public class QRCodeTxTransport implements Serializable {
     }
 
     public static String getHDAccountMonitoredUnsignedTx(Tx tx, String toAddress,
-                                                         HDAccount account) {
+                                                         HDAccount account) throws AddressFormatException {
         TxTransportType txTransportType = TxTransportType.ColdHD;
         List<HDAccount.HDAccountAddress> addresses = account.getSigningAddressesForInputs(tx
-                .getIns());
+                                                                                                  .getIns());
         List<byte[]> hashes = tx.getUnsignedInHashes();
 
         QRCodeTxTransport qrCodeTransport = new QRCodeTxTransport();
@@ -188,7 +188,7 @@ public class QRCodeTxTransport implements Serializable {
              i < addresses.size();
              i++) {
             HDAccount.HDAccountAddress address = addresses.get(i);
-            byte[] h = hashes.get(i);
+            byte[]                     h       = hashes.get(i);
             String[] strings = new String[]{Integer.toString(address.getPathType().getValue()),
                     Integer.toString(address.getIndex()), Utils.bytesToHexString(h).toUpperCase
                     (Locale.US)};
@@ -216,7 +216,7 @@ public class QRCodeTxTransport implements Serializable {
 
     private static QRCodeTxTransport changeFormatQRCodeTransportOfDesktopHDM(String str) {
         try {
-            String[] strArray = QRCodeUtil.splitString(str);
+            String[]          strArray        = QRCodeUtil.splitString(str);
             QRCodeTxTransport qrCodeTransport = new QRCodeTxTransport();
 
             String address = Base58.hexToBase58WithAddress(strArray[0]);
@@ -238,15 +238,15 @@ public class QRCodeTxTransport implements Serializable {
             qrCodeTransport.setToAddress(toAddress);
             qrCodeTransport.setTo(Long.parseLong(strArray[5], 16));
             List<AbstractHD.PathTypeIndex> pathTypeIndexList = new ArrayList<AbstractHD.PathTypeIndex>();
-            List<String> hashList = new ArrayList<String>();
+            List<String>                   hashList          = new ArrayList<String>();
             for (int i = 6;
                  i < strArray.length;
                  i++) {
                 String text = strArray[i];
 
                 if (!Utils.isEmpty(text)) {
-                    String[] hashPathTypeIndex = text.split(QRCodeUtil.QR_CODE_SECONDARY_SPLIT_ESCAPE);
-                    AbstractHD.PathTypeIndex pathTypeIndex = new AbstractHD.PathTypeIndex();
+                    String[]                 hashPathTypeIndex = text.split(QRCodeUtil.QR_CODE_SECONDARY_SPLIT_ESCAPE);
+                    AbstractHD.PathTypeIndex pathTypeIndex     = new AbstractHD.PathTypeIndex();
                     pathTypeIndex.pathType = AbstractHD.getTernalRootType(Integer.valueOf(hashPathTypeIndex[0]));
                     pathTypeIndex.index = Integer.valueOf(hashPathTypeIndex[1]);
                     pathTypeIndexList.add(pathTypeIndex);
@@ -269,7 +269,7 @@ public class QRCodeTxTransport implements Serializable {
                 return oldFormatQRCodeTransport(str);
             }
             QRCodeTxTransport qrCodeTransport = new QRCodeTxTransport();
-            String address = Base58.hexToBase58WithAddress(strArray[0]);
+            String            address         = Base58.hexToBase58WithAddress(strArray[0]);
 
             if (!Utils.validBicoinAddress(address)) {
                 return null;
@@ -278,15 +278,15 @@ public class QRCodeTxTransport implements Serializable {
             qrCodeTransport.setFee(Long.parseLong(strArray[1], 16));
             qrCodeTransport.setToAddress(Base58.hexToBase58WithAddress(strArray[2]));
             qrCodeTransport.setTo(Long.parseLong(strArray[3], 16));
-            List<String> hashList = new ArrayList<String>();
+            List<String>                   hashList          = new ArrayList<String>();
             List<AbstractHD.PathTypeIndex> pathTypeIndexList = new ArrayList<AbstractHD.PathTypeIndex>();
             for (int i = 4;
                  i < strArray.length;
                  i++) {
                 String text = strArray[i];
                 if (!Utils.isEmpty(text)) {
-                    String[] hashPathTypeIndex = text.split(QRCodeUtil.QR_CODE_SECONDARY_SPLIT_ESCAPE);
-                    AbstractHD.PathTypeIndex pathTypeIndex = new AbstractHD.PathTypeIndex();
+                    String[]                 hashPathTypeIndex = text.split(QRCodeUtil.QR_CODE_SECONDARY_SPLIT_ESCAPE);
+                    AbstractHD.PathTypeIndex pathTypeIndex     = new AbstractHD.PathTypeIndex();
                     pathTypeIndex.pathType = AbstractHD.getTernalRootType(Integer.valueOf(hashPathTypeIndex[0]));
                     pathTypeIndex.index = Integer.valueOf(hashPathTypeIndex[1]);
                     pathTypeIndexList.add(pathTypeIndex);
@@ -305,13 +305,13 @@ public class QRCodeTxTransport implements Serializable {
     public static QRCodeTxTransport formatQRCodeTransportOfDesktopHDM(String str) {
         try {
             QRCodeTxTransport qrCodeTxTransport = null;
-            TxTransportType txTransportType = null;
+            TxTransportType   txTransportType   = null;
 //            int hdmIndex = QRCodeTxTransport.NO_HDM_INDEX;
             String[] strArray = QRCodeUtil.splitString(str);
-            String str1 = strArray[0];
+            String   str1     = strArray[0];
             if (hasVersion(str1)) {
                 String versionStr = str1.replace(TX_TRANSPORT_VERSION, "");
-                int version = Integer.valueOf(versionStr);
+                int    version    = Integer.valueOf(versionStr);
                 txTransportType = getTxTransportType(version);
                 str = str.substring(strArray[0].length() + 1);
                 strArray = QRCodeUtil.splitString(str);
@@ -343,13 +343,13 @@ public class QRCodeTxTransport implements Serializable {
     public static QRCodeTxTransport formatQRCodeTransport(String str) {
         try {
             QRCodeTxTransport qrCodeTxTransport;
-            TxTransportType txTransportType = null;
-            int hdmIndex = QRCodeTxTransport.NO_HDM_INDEX;
-            String[] strArray = QRCodeUtil.splitString(str);
-            String str1 = strArray[0];
+            TxTransportType   txTransportType = null;
+            int               hdmIndex        = QRCodeTxTransport.NO_HDM_INDEX;
+            String[]          strArray        = QRCodeUtil.splitString(str);
+            String            str1            = strArray[0];
             if (hasVersion(str1)) {
                 String versionStr = str1.replace(TX_TRANSPORT_VERSION, "");
-                int version = Integer.valueOf(versionStr);
+                int    version    = Integer.valueOf(versionStr);
                 txTransportType = getTxTransportType(version);
                 str = str.substring(strArray[0].length() + 1);
                 strArray = QRCodeUtil.splitString(str);
@@ -369,12 +369,12 @@ public class QRCodeTxTransport implements Serializable {
             qrCodeTxTransport.setHdmIndex(hdmIndex);
             qrCodeTxTransport.setTxTransportType(txTransportType);
             if (txTransportType == TxTransportType.ColdHD) {
-                List<String> strs = qrCodeTxTransport.getHashList();
+                List<String>      strs   = qrCodeTxTransport.getHashList();
                 ArrayList<String> hashes = new ArrayList<String>();
                 ArrayList<AbstractHD.PathTypeIndex> paths = new ArrayList<AbstractHD
                         .PathTypeIndex>();
                 for (String s : strs) {
-                    String[] hs = s.split(QRCodeUtil.QR_CODE_SECONDARY_SPLIT_ESCAPE);
+                    String[]                 hs   = s.split(QRCodeUtil.QR_CODE_SECONDARY_SPLIT_ESCAPE);
                     AbstractHD.PathTypeIndex path = new AbstractHD.PathTypeIndex();
                     path.pathType = AbstractHD.getTernalRootType(Integer.valueOf(hs[0]));
                     path.index = Integer.valueOf(hs[1]);
@@ -395,7 +395,7 @@ public class QRCodeTxTransport implements Serializable {
 
     private static QRCodeTxTransport changeFormatQRCodeTransport(String str) {
         try {
-            String[] strArray = QRCodeUtil.splitString(str);
+            String[]          strArray        = QRCodeUtil.splitString(str);
             QRCodeTxTransport qrCodeTransport = new QRCodeTxTransport();
 
             String address = Base58.hexToBase58WithAddress(strArray[0]);
@@ -441,7 +441,7 @@ public class QRCodeTxTransport implements Serializable {
                 return oldFormatQRCodeTransport(str);
             }
             QRCodeTxTransport qrCodeTransport = new QRCodeTxTransport();
-            String address = Base58.hexToBase58WithAddress(strArray[0]);
+            String            address         = Base58.hexToBase58WithAddress(strArray[0]);
 
             if (!Utils.validBicoinAddress(address)) {
                 return null;
@@ -470,9 +470,9 @@ public class QRCodeTxTransport implements Serializable {
 
     private static QRCodeTxTransport oldFormatQRCodeTransport(String str) {
         try {
-            String[] strArray = QRCodeUtil.splitString(str);
+            String[]          strArray        = QRCodeUtil.splitString(str);
             QRCodeTxTransport qrCodeTransport = new QRCodeTxTransport();
-            String address = strArray[0];
+            String            address         = strArray[0];
             if (!Utils.validBicoinAddress(address)) {
                 return null;
             }
@@ -519,12 +519,12 @@ public class QRCodeTxTransport implements Serializable {
 
     public static String oldGetPreSignString(Tx tx, String addressCannotParsed) {
         QRCodeTxTransport qrCodeTransport = oldFromSendRequestWithUnsignedTransaction(tx,
-                addressCannotParsed);
+                                                                                      addressCannotParsed);
         String preSignString = qrCodeTransport.getMyAddress() + QRCodeUtil.OLD_QR_CODE_SPLIT +
                 Long.toHexString(qrCodeTransport.getFee()).toLowerCase(Locale.US) + QRCodeUtil
                 .OLD_QR_CODE_SPLIT + qrCodeTransport.getToAddress() + QRCodeUtil
                 .OLD_QR_CODE_SPLIT + Long.toHexString(qrCodeTransport.getTo()).toLowerCase(Locale
-                .US) + QRCodeUtil.OLD_QR_CODE_SPLIT;
+                                                                                                   .US) + QRCodeUtil.OLD_QR_CODE_SPLIT;
         for (int i = 0;
              i < qrCodeTransport.getHashList().size();
              i++) {
@@ -635,11 +635,11 @@ public class QRCodeTxTransport implements Serializable {
     }
 
     public static String getDeskpHDMPresignTxString(TxTransportType txTransportType, Tx tx, String changeAddress,
-                                                    String addressCannotParsed, List<DesktopHDMAddress> desktopHDMAddresses) {
+                                                    String addressCannotParsed, List<DesktopHDMAddress> desktopHDMAddresses) throws AddressFormatException {
         QRCodeTxTransport qrCodeTransport = fromDeskpHDMSendRequestWithUnsignedTransaction(txTransportType, tx, desktopHDMAddresses,
-                addressCannotParsed);
+                                                                                           addressCannotParsed);
         String preSignString = "";
-        String versionStr = "";
+        String versionStr    = "";
         if (txTransportType != null) {
             versionStr = TX_TRANSPORT_VERSION + txTransportType.getType();
         }
@@ -659,7 +659,7 @@ public class QRCodeTxTransport implements Serializable {
         }
         String[] preSigns = new String[]{versionStr, hdmIndexString, Base58.bas58ToHexWithAddress
                 (qrCodeTransport.getMyAddress()), changeStr, Long.toHexString(qrCodeTransport
-                .getFee()), Base58.bas58ToHexWithAddress(qrCodeTransport.getToAddress()),
+                                                                                      .getFee()), Base58.bas58ToHexWithAddress(qrCodeTransport.getToAddress()),
                 Long.toHexString(qrCodeTransport.getTo())};
         preSignString = Utils.joinString(preSigns, QRCodeUtil.QR_CODE_SPLIT);
         String[] hashStrings = new String[qrCodeTransport.getHashList().size()];
@@ -673,16 +673,16 @@ public class QRCodeTxTransport implements Serializable {
     }
 
     public static String getPresignTxString(Tx tx, String changeAddress,
-                                            String addressCannotParsed, int hdmIndex) {
+                                            String addressCannotParsed, int hdmIndex) throws AddressFormatException {
         return getPresignTxString(tx, changeAddress, addressCannotParsed, hdmIndex, null);
     }
 
     public static String getPresignTxString(Tx tx, String changeAddress,
-                                            String addressCannotParsed, int hdmIndex, TxTransportType txTransportType) {
+                                            String addressCannotParsed, int hdmIndex, TxTransportType txTransportType) throws AddressFormatException {
         QRCodeTxTransport qrCodeTransport = fromSendRequestWithUnsignedTransaction(tx,
-                addressCannotParsed, hdmIndex, txTransportType);
+                                                                                   addressCannotParsed, hdmIndex, txTransportType);
         String preSignString = "";
-        String versionStr = "";
+        String versionStr    = "";
         if (txTransportType != null) {
             versionStr = TX_TRANSPORT_VERSION + txTransportType.getType();
         }
@@ -702,7 +702,7 @@ public class QRCodeTxTransport implements Serializable {
         }
         String[] preSigns = new String[]{versionStr, hdmIndexString, Base58.bas58ToHexWithAddress
                 (qrCodeTransport.getMyAddress()), changeStr, Long.toHexString(qrCodeTransport
-                .getFee()), Base58.bas58ToHexWithAddress(qrCodeTransport.getToAddress()),
+                                                                                      .getFee()), Base58.bas58ToHexWithAddress(qrCodeTransport.getToAddress()),
                 Long.toHexString(qrCodeTransport.getTo())};
         preSignString = Utils.joinString(preSigns, QRCodeUtil.QR_CODE_SPLIT);
         String[] hashStrings = new String[qrCodeTransport.getHashList().size()];
@@ -715,9 +715,9 @@ public class QRCodeTxTransport implements Serializable {
     }
 
     private static boolean hasVersion(String str) {
-        String pattern = "[V][\\d{1,3}]";
-        Pattern p = Pattern.compile(pattern);
-        Matcher m = p.matcher(str);
+        String  pattern = "[V][\\d{1,3}]";
+        Pattern p       = Pattern.compile(pattern);
+        Matcher m       = p.matcher(str);
         return m.matches();
     }
 

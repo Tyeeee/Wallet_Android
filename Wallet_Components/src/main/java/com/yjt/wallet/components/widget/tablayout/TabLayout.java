@@ -17,13 +17,13 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.hynet.mergepay.components.R;
-import com.hynet.mergepay.components.utils.ViewUtil;
-import com.hynet.mergepay.components.widget.tablayout.listener.OnTabClickListener;
-import com.hynet.mergepay.components.widget.tablayout.listener.TabColorizer;
-import com.hynet.mergepay.components.widget.tablayout.listener.TabProvider;
-import com.hynet.mergepay.components.widget.tablayout.listener.implement.InternalViewPagerListener;
-import com.hynet.mergepay.components.widget.tablayout.listener.implement.SimpleTabProvider;
+import com.yjt.wallet.components.R;
+import com.yjt.wallet.components.utils.ViewUtil;
+import com.yjt.wallet.components.widget.tablayout.listener.OnTabClickListener;
+import com.yjt.wallet.components.widget.tablayout.listener.TabColorizer;
+import com.yjt.wallet.components.widget.tablayout.listener.TabProvider;
+import com.yjt.wallet.components.widget.tablayout.listener.implement.InternalViewPagerListener;
+import com.yjt.wallet.components.widget.tablayout.listener.implement.SimpleTabProvider;
 
 
 public class TabLayout extends HorizontalScrollView {
@@ -48,7 +48,7 @@ public class TabLayout extends HorizontalScrollView {
     private int tabViewTextMinWidth;
     private ViewPager viewPager;
     private ViewPager.OnPageChangeListener viewPagerPageChangeListener;
-    private com.hynet.mergepay.components.widget.tablayout.listener.OnScrollChangeListener onScrollChangeListener;
+    private com.yjt.wallet.components.widget.tablayout.listener.OnScrollChangeListener onScrollChangeListener;
     private TabProvider tabProvider;
     private InternalTabClickListener internalTabClickListener;
     private OnTabClickListener onTabClickListener;
@@ -228,11 +228,11 @@ public class TabLayout extends HorizontalScrollView {
     }
 
     /**
-     * Set {@link com.hynet.mergepay.components.widget.tablayout.listener.OnScrollChangeListener} for obtaining values of scrolling.
+     * Set {@link com.yjt.wallet.components.widget.tablayout.listener.OnScrollChangeListener} for obtaining values of scrolling.
      *
-     * @param listener the {@link com.hynet.mergepay.components.widget.tablayout.listener.OnScrollChangeListener} to set
+     * @param listener the {@link com.yjt.wallet.components.widget.tablayout.listener.OnScrollChangeListener} to set
      */
-    public void setOnScrollChangeListener(com.hynet.mergepay.components.widget.tablayout.listener.OnScrollChangeListener listener) {
+    public void setOnScrollChangeListener(com.yjt.wallet.components.widget.tablayout.listener.OnScrollChangeListener listener) {
         onScrollChangeListener = listener;
     }
 

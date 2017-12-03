@@ -16,10 +16,10 @@
 
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.exception.ProtocolException;
-import net.bither.bitherj.utils.Utils;
-import net.bither.bitherj.utils.VarInt;
+import com.yjt.wallet.core.contant.BitherjSettings;
+import com.yjt.wallet.core.exception.ProtocolException;
+import com.yjt.wallet.core.utils.Utils;
+import com.yjt.wallet.core.utils.VarInt;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,9 +32,9 @@ import java.util.List;
  */
 public class GetBlocksMessage extends Message {
     private static final long serialVersionUID = 3479412877853645644L;
-    protected long version;
+    protected long         version;
     protected List<byte[]> locator;
-    protected byte[] stopHash;
+    protected byte[]       stopHash;
 
     public GetBlocksMessage(List<byte[]> locator, byte[] stopHash) {
         super();
@@ -56,19 +56,22 @@ public class GetBlocksMessage extends Message {
 //        length = (int) (cursor - offset + ((startCount + 1) * 32));
 //    }
 
+    @Override
     public void parse() throws ProtocolException {
         cursor = offset;
         version = readUint32();
         int startCount = (int) readVarInt();
-        if (startCount > 500)
+        if (startCount > 500) {
             throw new ProtocolException("Number of locators cannot be > 500, received: " + startCount);
+        }
         length = (int) (cursor - offset + ((startCount + 1) * 32));
 
         cursor = offset;
         version = readUint32();
         startCount = (int) readVarInt();
-        if (startCount > 500)
+        if (startCount > 500) {
             throw new ProtocolException("Number of locators cannot be > 500, received: " + startCount);
+        }
         locator = new ArrayList<byte[]>(startCount);
         for (int i = 0; i < startCount; i++) {
             locator.add(readHash());
@@ -84,6 +87,7 @@ public class GetBlocksMessage extends Message {
         return stopHash;
     }
 
+    @Override
     public String toString() {
         StringBuffer b = new StringBuffer();
         b.append("getblocks: ");
@@ -94,6 +98,7 @@ public class GetBlocksMessage extends Message {
         return b.toString();
     }
 
+    @Override
     protected void bitcoinSerializeToStream(OutputStream stream) throws IOException {
         // Version, for some reason.
         Utils.uint32ToByteStreamLE(BitherjSettings.PROTOCOL_VERSION, stream);
@@ -111,7 +116,9 @@ public class GetBlocksMessage extends Message {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || o.getClass() != getClass()) return false;
+        if (o == null || o.getClass() != getClass()) {
+            return false;
+        }
         GetBlocksMessage other = (GetBlocksMessage) o;
         return (other.version == version &&
                 locator.size() == other.locator.size() && locator.containsAll(other.locator) &&
@@ -121,7 +128,9 @@ public class GetBlocksMessage extends Message {
     @Override
     public int hashCode() {
         int hashCode = (int) version ^ "getblocks".hashCode();
-        for (byte[] aLocator : locator) hashCode ^= aLocator.hashCode();
+        for (byte[] aLocator : locator) {
+            hashCode ^= aLocator.hashCode();
+        }
         hashCode ^= stopHash.hashCode();
         return hashCode;
     }

@@ -1,7 +1,7 @@
 package com.yjt.wallet.core.api.http;
 
-import net.bither.bitherj.AbstractApp;
-import net.bither.bitherj.api.ConnectHttps;
+import com.yjt.wallet.core.api.ConnectHttps;
+import com.yjt.wallet.core.contant.AbstractApp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
 
 public abstract class BaseHttpsResponse<T> {
     private static boolean isTrust = false;
-    protected T result;
-    private String mUrl;
+    protected T      result;
+    private   String mUrl;
 
 
     public T getResult() {
@@ -38,10 +38,10 @@ public abstract class BaseHttpsResponse<T> {
 
     protected String getStringFromIn(InputStream in) throws IOException {
         BufferedReader rd = new BufferedReader(new InputStreamReader(in,
-                HttpSetting.REQUEST_ENCODING));
-        String tempLine = rd.readLine();
-        StringBuffer tempStr = new StringBuffer();
-        String crlf = System.getProperty("line.separator");
+                                                                     HttpSetting.REQUEST_ENCODING));
+        String       tempLine = rd.readLine();
+        StringBuffer tempStr  = new StringBuffer();
+        String       crlf     = System.getProperty("line.separator");
         while (tempLine != null) {
             tempStr.append(tempLine);
             tempStr.append(crlf);

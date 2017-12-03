@@ -16,13 +16,13 @@
 
 package com.yjt.wallet.core.exception;
 
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.utils.Utils;
 
 public class TxBuilderException extends Exception {
-    public static final int ERR_TX_DUST_OUT_CODE = 2001;
-    public static final int ERR_TX_NOT_ENOUGH_MONEY_CODE = 2002;
-    public static final int ERR_TX_WAIT_CONFIRM_CODE = 2003;
-    public static final int ERR_TX_CAN_NOT_CALCULATE_CODE = 2004;
+    public static final int ERR_TX_DUST_OUT_CODE             = 2001;
+    public static final int ERR_TX_NOT_ENOUGH_MONEY_CODE     = 2002;
+    public static final int ERR_TX_WAIT_CONFIRM_CODE         = 2003;
+    public static final int ERR_TX_CAN_NOT_CALCULATE_CODE    = 2004;
     public static final int ERR_REACH_MAX_TX_SIZE_LIMIT_CODE = 2005;
 
     public static enum TxBuilderErrorType {

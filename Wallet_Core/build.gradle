@@ -30,7 +30,7 @@ android {
             assets.srcDirs = ['src/main/assets']
         }
         instrumentTest.setRoot('androidTest')
-        debug.setRoot('build-types/debug') 
+        debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
     lintOptions {
@@ -47,14 +47,12 @@ dependencies {
     androidTestImplementation deps.runner
     androidTestImplementation deps.espresso_core
     implementation deps.slf4j
-    api deps.guava
     api deps.annotation_java5
     api deps.jsr305
     api deps.scrypt
     api project(':Wallet_Components')
-//    api project(':Wallet_ECC')
-    compile 'org.apache.httpcomponents:httpclient:4.5@jar'
-    compile 'org.apache.httpcomponents:httpmime:4.1@jar'
-    compile 'org.apache.httpcomponents:httpcore:4.4.1@jar'
-    compile 'org.apache.james:apache-mime4j-core:0.7.1@jar'
+    implementation 'org.apache.httpcomponents:httpclient:4.5@jar'
+    implementation 'org.apache.httpcomponents:httpmime:4.1@jar'
+    implementation 'org.apache.httpcomponents:httpcore:4.4.1@jar'
+    implementation 'org.apache.james:apache-mime4j-core:0.7.1@jar'
 }

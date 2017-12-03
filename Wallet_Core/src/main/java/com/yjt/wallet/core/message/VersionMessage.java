@@ -16,11 +16,11 @@
 
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.core.Version;
-import net.bither.bitherj.exception.ProtocolException;
-import net.bither.bitherj.utils.Utils;
-import net.bither.bitherj.utils.VarInt;
+import com.yjt.wallet.core.Version;
+import com.yjt.wallet.core.contant.BitherjSettings;
+import com.yjt.wallet.core.exception.ProtocolException;
+import com.yjt.wallet.core.utils.Utils;
+import com.yjt.wallet.core.utils.VarInt;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -53,15 +53,15 @@ public class VersionMessage extends Message {
     /**
      * The version number of the protocol spoken.
      */
-    public int clientVersion;
+    public int         clientVersion;
     /**
      * Flags defining what is supported. Right now {@link #NODE_NETWORK} is the only flag defined.
      */
-    public long localServices;
+    public long        localServices;
     /**
      * What the other side believes the current time to be, in seconds.
      */
-    public long time;
+    public long        time;
     /**
      * What the other side believes the address of this program is. Not used.
      */
@@ -75,15 +75,15 @@ public class VersionMessage extends Message {
      * as something like an
      * HTTP User-Agent header.
      */
-    public String subVer;
+    public String      subVer;
     /**
      * How many blocks are in the chain, according to the other side.
      */
-    public long bestHeight;
+    public long        bestHeight;
     /**
      * Whether or not to relay tx invs before a filter is received
      */
-    public boolean relayTxesBeforeFilter;
+    public boolean     relayTxesBeforeFilter;
 
     public VersionMessage(byte[] msg) throws ProtocolException {
         super(msg, 0);
@@ -117,7 +117,7 @@ public class VersionMessage extends Message {
             final byte[] localhost = {127, 0, 0, 1};
             myAddr = new PeerAddress(InetAddress.getByAddress(localhost), BitherjSettings.port, 0);
             theirAddr = new PeerAddress(InetAddress.getByAddress(localhost),
-                    BitherjSettings.port, 0);
+                                        BitherjSettings.port, 0);
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);  // Cannot happen (illegal IP length).
         }
@@ -249,6 +249,7 @@ public class VersionMessage extends Message {
                 1 : 2);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
@@ -300,8 +301,11 @@ public class VersionMessage extends Message {
      * <p/>
      * See <a href="https://en.bitcoin.it/wiki/BIP_0014">BIP 14</a> for more information.
      *
-     * @param comments Optional (can be null) platform or other node specific information.
-     * @throws IllegalArgumentException if name, version or comments contains invalid characters.
+     * @param comments
+     *         Optional (can be null) platform or other node specific information.
+     *
+     * @throws IllegalArgumentException
+     *         if name, version or comments contains invalid characters.
      */
     public void appendToSubVer(String name, String version, @Nullable String comments) {
         checkSubVerComponent(name);
@@ -314,7 +318,7 @@ public class VersionMessage extends Message {
         }
     }
 
-    public boolean canRelayTx(){
+    public boolean canRelayTx() {
         return relayTxesBeforeFilter;
     }
 

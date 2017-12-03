@@ -17,13 +17,12 @@
 package com.yjt.wallet.core.crypto;
 
 
-import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.exception.AddressFormatException;
-import net.bither.bitherj.qrcode.QRCodeUtil;
-import net.bither.bitherj.utils.Base58;
-import net.bither.bitherj.utils.PrivateKeyUtil;
-import net.bither.bitherj.utils.Utils;
-
+import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
+import com.yjt.wallet.core.qrcode.QRCodeUtil;
+import com.yjt.wallet.core.utils.Base58;
+import com.yjt.wallet.core.utils.PrivateKeyUtil;
+import com.yjt.wallet.core.utils.Utils;
 
 public class PasswordSeed {
     private String address;
@@ -42,7 +41,7 @@ public class PasswordSeed {
     }
 
     public boolean checkPassword(CharSequence password) {
-        ECKey ecKey = PrivateKeyUtil.getECKeyFromSingleString(keyStr, password);
+        ECKey  ecKey = PrivateKeyUtil.getECKeyFromSingleString(keyStr, password);
         String ecKeyAddress;
         if (ecKey == null) {
             return false;
@@ -51,7 +50,7 @@ public class PasswordSeed {
             ecKey.clearPrivateKey();
         }
         return Utils.compareString(this.address,
-                ecKeyAddress);
+                                   ecKeyAddress);
 
     }
 

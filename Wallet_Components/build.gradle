@@ -50,7 +50,9 @@ dependencies {
     api deps.design
     api deps.okhttp3
     api deps.okio
+    api deps.guava
     api deps.fastjson
     api deps.glide
     api deps.JsBridge
+    api project(':Wallet_ECC')
 }

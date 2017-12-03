@@ -1,7 +1,7 @@
 package com.yjt.wallet.core.message;
 
-import net.bither.bitherj.exception.ProtocolException;
-import net.bither.bitherj.utils.VarInt;
+import com.yjt.wallet.core.exception.ProtocolException;
+import com.yjt.wallet.core.utils.VarInt;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class AddressMessage extends Message {
     private static final long serialVersionUID = 8058283864924679460L;
-    private static final long MAX_ADDRESSES = 1024;
+    private static final long MAX_ADDRESSES    = 1024;
     private List<PeerAddress> addresses;
     private transient long numAddresses = -1;
 
@@ -24,9 +24,12 @@ public class AddressMessage extends Message {
      * Contruct a new 'addr' message.
      * //     * @param params NetworkParameters object.
      *
-     * @param offset The location of the first msg byte within the array.
-     * @param length The length of message if known.  Usually this is provided when deserializing of the wire
-     *               as the length will be provided as part of the header.  If unknown then set to Message.UNKNOWN_LENGTH
+     * @param offset
+     *         The location of the first msg byte within the array.
+     * @param length
+     *         The length of message if known.  Usually this is provided when deserializing of the wire
+     *         as the length will be provided as part of the header.  If unknown then set to Message.UNKNOWN_LENGTH
+     *
      * @throws net.bither.bitherj.exception.ProtocolException
      */
     AddressMessage(byte[] payload, int offset, int length) throws ProtocolException {
@@ -37,8 +40,10 @@ public class AddressMessage extends Message {
      * Contruct a new 'addr' message.
      * //     * @param params NetworkParameters object.
      *
-     * @param length The length of message if known.  Usually this is provided when deserializing of the wire
-     *               as the length will be provided as part of the header.  If unknown then set to Message.UNKNOWN_LENGTH
+     * @param length
+     *         The length of message if known.  Usually this is provided when deserializing of the wire
+     *         as the length will be provided as part of the header.  If unknown then set to Message.UNKNOWN_LENGTH
+     *
      * @throws ProtocolException
      */
     public AddressMessage(byte[] payload, int length) throws ProtocolException {
@@ -61,8 +66,9 @@ public class AddressMessage extends Message {
     protected void parse() throws ProtocolException {
         numAddresses = readVarInt();
         // Guard against ultra large messages that will crash us.
-        if (numAddresses > MAX_ADDRESSES)
+        if (numAddresses > MAX_ADDRESSES) {
             throw new ProtocolException("Address message too large.");
+        }
         addresses = new ArrayList<PeerAddress>((int) numAddresses);
         for (int i = 0; i < numAddresses; i++) {
             PeerAddress addr = new PeerAddress(bytes, cursor, protocolVersion, this, 30);
@@ -77,17 +83,20 @@ public class AddressMessage extends Message {
       */
     @Override
     protected void bitcoinSerializeToStream(OutputStream stream) throws IOException {
-        if (addresses == null)
+        if (addresses == null) {
             return;
+        }
         stream.write(new VarInt(addresses.size()).encode());
         for (PeerAddress addr : addresses) {
             addr.bitcoinSerialize(stream);
         }
     }
 
+    @Override
     public int getMessageSize() {
-        if (length != UNKNOWN_LENGTH)
+        if (length != UNKNOWN_LENGTH) {
             return length;
+        }
         if (addresses != null) {
             length = new VarInt(addresses.size()).getSizeInBytes();
             // The 4 byte difference is the uint32 timestamp that was introduced in version 31402
@@ -117,19 +126,21 @@ public class AddressMessage extends Message {
     public void addAddress(PeerAddress address) {
         address.setParent(this);
         addresses.add(address);
-        if (length == UNKNOWN_LENGTH)
+        if (length == UNKNOWN_LENGTH) {
             getMessageSize();
-        else
+        } else {
             length += address.getMessageSize();
+        }
     }
 
     public void removeAddress(int index) {
         PeerAddress address = addresses.remove(index);
         address.setParent(null);
-        if (length == UNKNOWN_LENGTH)
+        if (length == UNKNOWN_LENGTH) {
             getMessageSize();
-        else
+        } else {
             length -= address.getMessageSize();
+        }
     }
 
     @Override

@@ -16,10 +16,10 @@
 
 package com.yjt.wallet.core.api;
 
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.api.http.BitherUrl;
-import net.bither.bitherj.api.http.HttpGetResponse;
-import net.bither.bitherj.utils.Utils;
+import com.yjt.wallet.core.api.http.BitherUrl;
+import com.yjt.wallet.core.api.http.HttpGetResponse;
+import com.yjt.wallet.core.contant.BitherjSettings;
+import com.yjt.wallet.core.utils.Utils;
 
 public class GetKlineApi extends HttpGetResponse<String> {
 
@@ -27,7 +27,7 @@ public class GetKlineApi extends HttpGetResponse<String> {
     public GetKlineApi(BitherjSettings.MarketType marketType, BitherjSettings.KlineTimeType klineTimeType) {
 
         String url = Utils.format(BitherUrl.BITHER_KLINE_URL,
-                BitherjSettings.getMarketValue(marketType), klineTimeType.getValue());
+                                  BitherjSettings.getMarketValue(marketType), klineTimeType.getValue());
         setUrl(url);
 
     }

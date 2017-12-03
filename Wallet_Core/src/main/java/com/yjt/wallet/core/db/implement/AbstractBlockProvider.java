@@ -17,27 +17,26 @@
 package com.yjt.wallet.core.db.implement;
 
 import com.google.common.base.Function;
-
-import net.bither.bitherj.BitherjSettings;
-import net.bither.bitherj.core.Block;
-import net.bither.bitherj.db.AbstractDb;
-import net.bither.bitherj.db.IBlockProvider;
-import net.bither.bitherj.db.imp.base.ICursor;
-import net.bither.bitherj.db.imp.base.IDb;
-import net.bither.bitherj.exception.AddressFormatException;
-import net.bither.bitherj.utils.Base58;
+import com.yjt.wallet.core.Block;
+import com.yjt.wallet.core.contant.BitherjSettings;
+import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.db.IBlockProvider;
+import com.yjt.wallet.core.db.base.ICursor;
+import com.yjt.wallet.core.db.base.IDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
+import com.yjt.wallet.core.utils.Base58;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
 public abstract class AbstractBlockProvider extends AbstractProvider implements IBlockProvider {
 
+    @Override
     public List<Block> getAllBlocks() {
         final List<Block> blockItems = new ArrayList<Block>();
-        String sql = "select * from blocks order by block_no desc";
+        String            sql        = "select * from blocks order by block_no desc";
 
         this.execQueryLoop(sql, null, new Function<ICursor, Void>() {
             @Nullable
@@ -53,7 +52,7 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
     @Override
     public List<Block> getLimitBlocks(int limit) {
         final List<Block> blockItems = new ArrayList<Block>();
-        String sql = "select * from blocks order by block_no desc limit ?";
+        String            sql        = "select * from blocks order by block_no desc limit ?";
         this.execQueryLoop(sql, new String[]{Integer.toString(limit)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -65,9 +64,10 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         return blockItems;
     }
 
+    @Override
     public List<Block> getBlocksFrom(int blockNo) {
         final List<Block> blockItems = new ArrayList<Block>();
-        String sql = "select * from blocks where block_no>? order by block_no desc";
+        String            sql        = "select * from blocks where block_no>? order by block_no desc";
         this.execQueryLoop(sql, new String[]{Integer.toString(blockNo)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -79,8 +79,9 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         return blockItems;
     }
 
+    @Override
     public int getBlockCount() {
-        String sql = "select count(*) cnt from blocks ";
+        String      sql   = "select count(*) cnt from blocks ";
         final int[] count = {0};
         this.execQueryOneRecord(sql, null, new Function<ICursor, Void>() {
             @Nullable
@@ -96,9 +97,10 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         return count[0];
     }
 
+    @Override
     public Block getLastBlock() {
         final Block[] item = {null};
-        String sql = "select * from blocks where is_main=1 order by block_no desc limit 1";
+        String        sql  = "select * from blocks where is_main=1 order by block_no desc limit 1";
 
         this.execQueryOneRecord(sql, null, new Function<ICursor, Void>() {
             @Nullable
@@ -111,9 +113,10 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         return item[0];
     }
 
+    @Override
     public Block getLastOrphanBlock() {
         final Block[] item = {null};
-        String sql = "select * from blocks where is_main=0 order by block_no desc limit 1";
+        String        sql  = "select * from blocks where is_main=0 order by block_no desc limit 1";
         this.execQueryOneRecord(sql, null, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -125,9 +128,10 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         return item[0];
     }
 
+    @Override
     public Block getBlock(byte[] blockHash) {
         final Block[] item = {null};
-        String sql = "select * from blocks where block_hash=?";
+        String        sql  = "select * from blocks where block_hash=?";
         this.execQueryOneRecord(sql, new String[]{Base58.encode(blockHash)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -139,9 +143,10 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         return item[0];
     }
 
+    @Override
     public Block getOrphanBlockByPrevHash(byte[] prevHash) {
         final Block[] item = {null};
-        String sql = "select * from blocks where block_prev=? and is_main=0";
+        String        sql  = "select * from blocks where block_prev=? and is_main=0";
         this.execQueryOneRecord(sql, new String[]{Base58.encode(prevHash)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -153,9 +158,10 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         return item[0];
     }
 
+    @Override
     public Block getMainChainBlock(byte[] blockHash) {
         final Block[] item = {null};
-        String sql = "select * from blocks where block_hash=? and is_main=1";
+        String        sql  = "select * from blocks where block_hash=? and is_main=1";
         this.execQueryOneRecord(sql, new String[]{Base58.encode(blockHash)}, new Function<ICursor, Void>() {
             @Nullable
             @Override
@@ -181,6 +187,7 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
 //        return exists;
 //    }
 
+    @Override
     public void addBlocks(List<Block> blockItemList) {
         List<Block> addBlockList = new ArrayList<Block>();
         for (Block item : blockItemList) {
@@ -192,7 +199,7 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         writeDb.beginTransaction();
         String sql = "insert into blocks(block_no,block_hash,block_root,block_ver,block_bits,block_nonce,block_time,block_prev,is_main) values(?,?,?,?,?,?,?,?,?)";
         for (Block item : addBlockList) {
-            this.execUpdate(writeDb, sql, new String[] {
+            this.execUpdate(writeDb, sql, new String[]{
                     Integer.toString(item.getBlockNo())
                     , Base58.encode(item.getBlockHash())
                     , Base58.encode(item.getBlockRoot())
@@ -207,11 +214,12 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         writeDb.endTransaction();
     }
 
+    @Override
     public void addBlock(Block item) {
         boolean blockExists = blockExists(item.getBlockHash());
         if (!blockExists) {
             String sql = "insert into blocks(block_no,block_hash,block_root,block_ver,block_bits,block_nonce,block_time,block_prev,is_main) values(?,?,?,?,?,?,?,?,?)";
-            this.execUpdate(sql, new String[] {
+            this.execUpdate(sql, new String[]{
                     Integer.toString(item.getBlockNo())
                     , Base58.encode(item.getBlockHash())
                     , Base58.encode(item.getBlockRoot())
@@ -226,7 +234,7 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
     }
 
     public boolean blockExists(byte[] blockHash) {
-        String sql = "select count(0) cnt from blocks where block_hash=?";
+        String      sql = "select count(0) cnt from blocks where block_hash=?";
         final int[] cnt = {0};
 
         this.execQueryOneRecord(sql, new String[]{Base58.encode(blockHash)}, new Function<ICursor, Void>() {
@@ -240,18 +248,21 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
         return cnt[0] > 0;
     }
 
+    @Override
     public void updateBlock(byte[] blockHash, boolean isMain) {
         String sql = "update blocks set is_main=? where block_hash=?";
-        this.execUpdate(sql, new String[] {isMain ? "1" : "0", Base58.encode(blockHash)});
+        this.execUpdate(sql, new String[]{isMain ? "1" : "0", Base58.encode(blockHash)});
     }
 
+    @Override
     public void removeBlock(byte[] blockHash) {
         String sql = "delete from blocks where block_hash=?";
         this.execUpdate(sql, new String[]{Base58.encode(blockHash)});
     }
 
+    @Override
     public void cleanOldBlock() {
-        String sql = "select count(0) cnt from blocks";
+        String      sql = "select count(0) cnt from blocks";
         final int[] cnt = {0};
         this.execQueryOneRecord(sql, null, new Function<ICursor, Void>() {
             @Nullable
@@ -280,16 +291,16 @@ public abstract class AbstractBlockProvider extends AbstractProvider implements 
     }
 
     private Block applyCursor(ICursor c) {
-        byte[] blockHash = null;
-        long version = 1;
-        byte[] prevBlock = null;
-        byte[] merkleRoot = null;
-        int timestamp = 0;
-        long target = 0;
-        long nonce = 0;
-        int blockNo = 0;
-        boolean isMain = false;
-        int idColumn = c.getColumnIndex(AbstractDb.BlocksColumns.BLOCK_BITS);
+        byte[]  blockHash  = null;
+        long    version    = 1;
+        byte[]  prevBlock  = null;
+        byte[]  merkleRoot = null;
+        int     timestamp  = 0;
+        long    target     = 0;
+        long    nonce      = 0;
+        int     blockNo    = 0;
+        boolean isMain     = false;
+        int     idColumn   = c.getColumnIndex(AbstractDb.BlocksColumns.BLOCK_BITS);
         if (idColumn != -1) {
             target = c.getLong(idColumn);
         }
