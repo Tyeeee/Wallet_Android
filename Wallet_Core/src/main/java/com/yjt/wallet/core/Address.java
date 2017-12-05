@@ -20,6 +20,7 @@ import com.yjt.wallet.core.contant.AbstractApp;
 import com.yjt.wallet.core.crypto.ECKey;
 import com.yjt.wallet.core.crypto.TransactionSignature;
 import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
 import com.yjt.wallet.core.exception.PasswordException;
 import com.yjt.wallet.core.exception.TxBuilderException;
 import com.yjt.wallet.core.script.ScriptBuilder;
@@ -285,19 +286,19 @@ public class Address implements Comparable<Address> {
     }
 
 
-    public Tx buildTx(List<Long> amounts, List<String> addresses) throws TxBuilderException {
+    public Tx buildTx(List<Long> amounts, List<String> addresses) throws TxBuilderException, AddressFormatException {
         return buildTx(getAddress(), amounts, addresses);
     }
 
-    public Tx buildTx(String changeAddress, List<Long> amounts, List<String> addresses) throws TxBuilderException {
+    public Tx buildTx(String changeAddress, List<Long> amounts, List<String> addresses) throws TxBuilderException, AddressFormatException {
         return TxBuilder.getInstance().buildTx(this, changeAddress, amounts, addresses);
     }
 
-    public Tx buildTx(long amount, String address) throws TxBuilderException {
+    public Tx buildTx(long amount, String address) throws TxBuilderException, AddressFormatException {
         return buildTx(amount, address, getAddress());
     }
 
-    public Tx buildTx(long amount, String address, String changeAddress) throws TxBuilderException {
+    public Tx buildTx(long amount, String address, String changeAddress) throws TxBuilderException, AddressFormatException {
         List<Long> amounts = new ArrayList<Long>();
         amounts.add(amount);
         List<String> addresses = new ArrayList<String>();

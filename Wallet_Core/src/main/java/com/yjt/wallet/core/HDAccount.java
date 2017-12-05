@@ -26,6 +26,7 @@ import com.yjt.wallet.core.crypto.hd.HDKeyDerivation;
 import com.yjt.wallet.core.crypto.mnemonic.MnemonicCode;
 import com.yjt.wallet.core.crypto.mnemonic.MnemonicException;
 import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
 import com.yjt.wallet.core.exception.PasswordException;
 import com.yjt.wallet.core.exception.TxBuilderException;
 import com.yjt.wallet.core.qrcode.QRCodeUtil;
@@ -75,18 +76,18 @@ public class HDAccount extends Address {
 
     public HDAccount(byte[] mnemonicSeed, CharSequence password, boolean isSyncedComplete) throws
             MnemonicException
-            .MnemonicLengthException {
+                    .MnemonicLengthException {
         super();
         this.mnemonicSeed = mnemonicSeed;
         hdSeed = seedFromMnemonic(mnemonicSeed);
-        DeterministicKey master          = HDKeyDerivation.createMasterPrivateKey(hdSeed);
-        EncryptedData    encryptedHDSeed = new EncryptedData(hdSeed, password, isFromXRandom);
+        DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(hdSeed);
+        EncryptedData encryptedHDSeed = new EncryptedData(hdSeed, password, isFromXRandom);
         EncryptedData encryptedMnemonicSeed = new EncryptedData(mnemonicSeed, password,
-                isFromXRandom);
+                                                                isFromXRandom);
         DeterministicKey account = getAccount(master);
         account.clearPrivateKey();
         initHDAccount(account, encryptedMnemonicSeed, encryptedHDSeed, isFromXRandom,
-                isSyncedComplete, null);
+                      isSyncedComplete, null);
     }
 
     // Create With Random
@@ -97,12 +98,12 @@ public class HDAccount extends Address {
         hdSeed = seedFromMnemonic(mnemonicSeed);
         EncryptedData encryptedHDSeed = new EncryptedData(hdSeed, password, isFromXRandom);
         EncryptedData encryptedMnemonicSeed = new EncryptedData(mnemonicSeed, password,
-                isFromXRandom);
+                                                                isFromXRandom);
         DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(hdSeed);
         DeterministicKey account = getAccount(master);
         account.clearPrivateKey();
         initHDAccount(account, encryptedMnemonicSeed, encryptedHDSeed, isFromXRandom, true,
-                generationDelegate);
+                      generationDelegate);
     }
 
     //use in import
@@ -117,7 +118,7 @@ public class HDAccount extends Address {
         DeterministicKey account = getAccount(master);
         account.clearPrivateKey();
         initHDAccount(account, encryptedMnemonicSeed, encryptedHDSeed, isFromXRandom,
-                isSyncedComplete, null);
+                      isSyncedComplete, null);
     }
 
     public HDAccount(byte[] accountExtentedPub) throws MnemonicException.MnemonicLengthException {
@@ -182,7 +183,7 @@ public class HDAccount extends Address {
             byte[] subExternalPub = externalKey.deriveSoftened(i).getPubKey();
             HDAccountAddress externalAddress = new HDAccountAddress
                     (subExternalPub, AbstractHD.PathType.EXTERNAL_ROOT_PATH, i, isSyncedComplete,
-                            hdSeedId);
+                     hdSeedId);
             externalAddresses.add(externalAddress);
             progress += itemProgress;
             if (generationDelegate != null) {
@@ -192,7 +193,7 @@ public class HDAccount extends Address {
             byte[] subInternalPub = internalKey.deriveSoftened(i).getPubKey();
             HDAccountAddress internalAddress = new HDAccountAddress
                     (subInternalPub, AbstractHD.PathType.INTERNAL_ROOT_PATH, i, isSyncedComplete,
-                            hdSeedId);
+                     hdSeedId);
             internalAddresses.add(internalAddress);
             progress += itemProgress;
             if (generationDelegate != null) {
@@ -206,9 +207,9 @@ public class HDAccount extends Address {
             hasSeed = false;
         } else {
             hdSeedId = AbstractDb.hdAccountProvider.addHDAccount(encryptedMnemonicSeed
-                    .toEncryptedString(), encryptedHDSeed.toEncryptedString(), firstAddress,
-                    isFromXRandom, address, externalKey.getPubKeyExtended(), internalKey
-                            .getPubKeyExtended());
+                                                                         .toEncryptedString(), encryptedHDSeed.toEncryptedString(), firstAddress,
+                                                                 isFromXRandom, address, externalKey.getPubKeyExtended(), internalKey
+                                                                         .getPubKeyExtended());
             hasSeed = true;
         }
         for (HDAccountAddress addr : externalAddresses) {
@@ -338,12 +339,12 @@ public class HDAccount extends Address {
 
     private int allGeneratedInternalAddressCount() {
         return AbstractDb.hdAccountAddressProvider.allGeneratedAddressCount(this.hdSeedId,
-                AbstractHD.PathType.INTERNAL_ROOT_PATH);
+                                                                            AbstractHD.PathType.INTERNAL_ROOT_PATH);
     }
 
     private int allGeneratedExternalAddressCount() {
         return AbstractDb.hdAccountAddressProvider.allGeneratedAddressCount(this.hdSeedId,
-                AbstractHD.PathType.EXTERNAL_ROOT_PATH);
+                                                                            AbstractHD.PathType.EXTERNAL_ROOT_PATH);
     }
 
     public HDAccountAddress addressForPath(AbstractHD.PathType type, int index) {
@@ -365,7 +366,7 @@ public class HDAccount extends Address {
         supplyEnoughKeys(true);
         long deltaBalance = getDeltaBalance();
         AbstractApp.notificationService.notificatTx(hasPrivKey() ? HDAccountPlaceHolder :
-                        HDAccountMonitoredPlaceHolder, tx, txNotificationType,
+                                                            HDAccountMonitoredPlaceHolder, tx, txNotificationType,
                                                     deltaBalance);
     }
 
@@ -384,7 +385,7 @@ public class HDAccount extends Address {
     public void notificatTx(Tx tx, Tx.TxNotificationType txNotificationType) {
         long deltaBalance = getDeltaBalance();
         AbstractApp.notificationService.notificatTx(hasPrivKey() ? HDAccountPlaceHolder :
-                HDAccountMonitoredPlaceHolder, tx, txNotificationType, deltaBalance);
+                                                            HDAccountMonitoredPlaceHolder, tx, txNotificationType, deltaBalance);
     }
 
     private long getDeltaBalance() {
@@ -438,7 +439,7 @@ public class HDAccount extends Address {
 
             if (tx.getBlockNo() == Tx.TX_UNCONFIRMED
                     && (Utils.isIntersects(spent, spentOut) || Utils.isIntersects(inHashes,
-                    invalidTx))) {
+                                                                                  invalidTx))) {
                 invalidTx.add(tx.getTxHash());
                 continue;
             }
@@ -493,13 +494,11 @@ public class HDAccount extends Address {
         return AbstractDb.hdAccountAddressProvider.getBelongAccountAddresses(this.hdSeedId, addressList);
     }
 
-    public Tx newTx(String toAddress, Long amount, CharSequence password) throws
-            TxBuilderException, MnemonicException.MnemonicLengthException {
+    public Tx newTx(String toAddress, Long amount, CharSequence password) throws TxBuilderException, MnemonicException.MnemonicLengthException, AddressFormatException {
         return newTx(new String[]{toAddress}, new Long[]{amount}, password);
     }
 
-    public Tx newTx(String[] toAddresses, Long[] amounts, CharSequence password) throws
-            TxBuilderException, MnemonicException.MnemonicLengthException {
+    public Tx newTx(String[] toAddresses, Long[] amounts, CharSequence password) throws TxBuilderException, MnemonicException.MnemonicLengthException, AddressFormatException {
         if (password != null && !hasPrivKey()) {
             throw new RuntimeException("Can not sign without private key");
         }
@@ -558,14 +557,12 @@ public class HDAccount extends Address {
         return tx;
     }
 
-    public Tx newTx(String toAddress, Long amount) throws TxBuilderException, MnemonicException
-            .MnemonicLengthException {
+    public Tx newTx(String toAddress, Long amount) throws TxBuilderException, MnemonicException.MnemonicLengthException, AddressFormatException {
         return newTx(new String[]{toAddress}, new Long[]{amount});
     }
 
 
-    public Tx newTx(String[] toAddresses, Long[] amounts) throws TxBuilderException,
-            MnemonicException.MnemonicLengthException {
+    public Tx newTx(String[] toAddresses, Long[] amounts) throws TxBuilderException, MnemonicException.MnemonicLengthException, AddressFormatException {
         List<Out> outs = AbstractDb.hdAccountAddressProvider.getUnspendOutByHDAccount(hdSeedId);
         Tx tx = TxBuilder.getInstance().buildTxFromAllAddress(outs, getNewChangeAddress(), Arrays
                 .asList(amounts), Arrays.asList(toAddresses));
@@ -589,12 +586,12 @@ public class HDAccount extends Address {
 
     public void updateIssuedInternalIndex(int index) {
         AbstractDb.hdAccountAddressProvider.updateIssuedIndex(this.hdSeedId, AbstractHD.PathType.INTERNAL_ROOT_PATH,
-                index);
+                                                              index);
     }
 
     public void updateIssuedExternalIndex(int index) {
         AbstractDb.hdAccountAddressProvider.updateIssuedIndex(this.hdSeedId, AbstractHD.PathType.EXTERNAL_ROOT_PATH,
-                index);
+                                                              index);
     }
 
     private String getNewChangeAddress() {
@@ -742,7 +739,7 @@ public class HDAccount extends Address {
             decryptMnemonicSeed(password);
             byte[] hdCopy = Arrays.copyOf(hdSeed, hdSeed.length);
             boolean hdSeedSafe = Utils.compareString(getFirstAddressFromDb(),
-                    getFirstAddressFromSeed(null));
+                                                     getFirstAddressFromSeed(null));
             boolean mnemonicSeedSafe = Arrays.equals(seedFromMnemonic(mnemonicSeed), hdCopy);
             Utils.wipeBytes(hdCopy);
             wipeHDSeed();
@@ -835,7 +832,7 @@ public class HDAccount extends Address {
         public HDAccountAddress(byte[] pub, AbstractHD.PathType pathType, int index, boolean
                 isSyncedComplete, int hdAccountId) {
             this(Utils.toAddress(Utils.sha256hash160(pub)), pub, pathType, index, false,
-                    isSyncedComplete, hdAccountId);
+                 isSyncedComplete, hdAccountId);
         }
 
         public HDAccountAddress(String address, byte[] pub, AbstractHD.PathType pathType, int

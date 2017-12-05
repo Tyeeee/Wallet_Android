@@ -900,7 +900,7 @@ public class Utils {
         return m.matches();
     }
 
-    public static boolean validBitcoinPrivateKey(String str) {
+    public static boolean validBitcoinPrivateKey(String str) throws AddressFormatException {
         DumpedPrivateKey dumpedPrivateKey = new DumpedPrivateKey(str);
         dumpedPrivateKey.clearPrivateKey();
         return true;

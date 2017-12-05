@@ -20,6 +20,7 @@ import com.yjt.wallet.core.contant.BitherjSettings;
 import com.yjt.wallet.core.crypto.ECKey;
 import com.yjt.wallet.core.crypto.TransactionSignature;
 import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
 import com.yjt.wallet.core.exception.ProtocolException;
 import com.yjt.wallet.core.exception.ScriptException;
 import com.yjt.wallet.core.exception.VerificationException;
@@ -663,7 +664,7 @@ public class Tx extends Message implements Comparable<Tx> {
      * Creates an output based on the given address and value, adds it to this transaction,
      * and returns the new output.
      */
-    public Out addOutput(long value, String address) {
+    public Out addOutput(long value, String address) throws AddressFormatException {
         return addOutput(new Out(this, value, address));
     }
 

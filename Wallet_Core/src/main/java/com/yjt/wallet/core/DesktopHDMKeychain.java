@@ -28,6 +28,7 @@ import com.yjt.wallet.core.crypto.hd.HDKeyDerivation;
 import com.yjt.wallet.core.crypto.mnemonic.MnemonicCode;
 import com.yjt.wallet.core.crypto.mnemonic.MnemonicException;
 import com.yjt.wallet.core.db.AbstractDb;
+import com.yjt.wallet.core.exception.AddressFormatException;
 import com.yjt.wallet.core.exception.TxBuilderException;
 import com.yjt.wallet.core.qrcode.QRCodeUtil;
 import com.yjt.wallet.core.script.ScriptBuilder;
@@ -63,11 +64,11 @@ public class DesktopHDMKeychain extends AbstractHD {
     public DesktopHDMKeychain(byte[] mnemonicSeed, CharSequence password) throws MnemonicException
             .MnemonicLengthException {
         this.mnemonicSeed = mnemonicSeed;
-        String        firstAddress          = null;
+        String firstAddress = null;
         EncryptedData encryptedMnemonicSeed = null;
-        EncryptedData encryptedHDSeed       = null;
-        ECKey         k                     = new ECKey(mnemonicSeed, null);
-        String        address               = k.toAddress();
+        EncryptedData encryptedHDSeed = null;
+        ECKey k = new ECKey(mnemonicSeed, null);
+        String address = k.toAddress();
         k.clearPrivateKey();
 
         hdSeed = seedFromMnemonic(mnemonicSeed);
@@ -127,8 +128,8 @@ public class DesktopHDMKeychain extends AbstractHD {
         wipeHDSeed();
 
         this.hdSeedId = AbstractDb.desktopAddressProvider.addHDKey(encryptedMnemonicSeed
-                        .toEncryptedString(), encryptedHDSeed.toEncryptedString(), firstAddress,
-                isFromXRandom, address, null, null);
+                                                                           .toEncryptedString(), encryptedHDSeed.toEncryptedString(), firstAddress,
+                                                                   isFromXRandom, address, null, null);
         if (as.size() > 0) {
             //   EnDesktopAddressProvider.getInstance().completeHDMAddresses(getHdSeedId(), as);
 
@@ -159,8 +160,8 @@ public class DesktopHDMKeychain extends AbstractHD {
         wipeHDSeed();
         wipeMnemonicSeed();
         hdSeedId = AbstractDb.desktopAddressProvider.addHDKey(encryptedMnemonicSeed.toEncryptedString(),
-                encryptedHDSeed.toEncryptedString(), firstAddress, isFromXRandom, address, externalKey.getPubKeyExtended(), internalKey
-                        .getPubKeyExtended());
+                                                              encryptedHDSeed.toEncryptedString(), firstAddress, isFromXRandom, address, externalKey.getPubKeyExtended(), internalKey
+                                                                      .getPubKeyExtended());
         internalKey.wipe();
         externalKey.wipe();
 
@@ -357,14 +358,12 @@ public class DesktopHDMKeychain extends AbstractHD {
         return getRelatedAddressesForTx(tx, inAddresses).size() > 0;
     }
 
-    public Tx newTx(String toAddress, Long amount) throws
-            TxBuilderException, MnemonicException.MnemonicLengthException {
+    public Tx newTx(String toAddress, Long amount) throws TxBuilderException, MnemonicException.MnemonicLengthException, AddressFormatException {
         return newTx(new String[]{toAddress}, new Long[]{amount});
     }
 
 
-    public Tx newTx(String[] toAddresses, Long[] amounts) throws
-            TxBuilderException, MnemonicException.MnemonicLengthException {
+    public Tx newTx(String[] toAddresses, Long[] amounts) throws TxBuilderException, MnemonicException.MnemonicLengthException, AddressFormatException {
         List<Out> outs = AbstractDb.desktopTxProvider.getUnspendOutByHDAccount(hdSeedId);
 
         Tx tx = TxBuilder.getInstance().buildTxFromAllAddress(outs, getNewChangeAddress(), Arrays
@@ -427,7 +426,7 @@ public class DesktopHDMKeychain extends AbstractHD {
     public void signTx(Tx tx, List<byte[]> unSignHash, CharSequence passphrase, List<DesktopHDMAddress> desktopHDMAddresslist,
                        DesktopHDMFetchOtherSignatureDelegate delegate) {
         tx.signWithSignatures(this.signWithOther(unSignHash,
-                passphrase, tx, desktopHDMAddresslist, delegate));
+                                                 passphrase, tx, desktopHDMAddresslist, delegate));
     }
 
     public List<byte[]> signWithOther(List<byte[]> unsignHash, CharSequence password, Tx tx, List<DesktopHDMAddress> desktopHDMAddresslist,
@@ -600,7 +599,7 @@ public class DesktopHDMKeychain extends AbstractHD {
             decryptMnemonicSeed(password);
             byte[] hdCopy = Arrays.copyOf(hdSeed, hdSeed.length);
             boolean hdSeedSafe = Utils.compareString(getFirstAddressFromDb(),
-                    getFirstAddressFromSeed(null));
+                                                     getFirstAddressFromSeed(null));
             boolean mnemonicSeedSafe = Arrays.equals(seedFromMnemonic(mnemonicSeed), hdCopy);
             Utils.wipeBytes(hdCopy);
             wipeHDSeed();
@@ -643,7 +642,7 @@ public class DesktopHDMKeychain extends AbstractHD {
         String address = Base58.hexToBase58WithAddress(passwordSeeds[0]);
         String encreyptString = Utils.joinString(new String[]{passwordSeeds[1], passwordSeeds[2],
                 passwordSeeds[3]}, QRCodeUtil.QR_CODE_SPLIT);
-        byte[]       seed     = new EncryptedData(encreyptString).decrypt(password);
+        byte[] seed = new EncryptedData(encreyptString).decrypt(password);
         MnemonicCode mnemonic = MnemonicCode.instance();
 
         byte[] s = mnemonic.toSeed(mnemonic.toMnemonic(seed), "");
@@ -711,7 +710,7 @@ public class DesktopHDMKeychain extends AbstractHD {
         supplyEnoughKeys(true);
         long deltaBalance = getDeltaBalance();
         AbstractApp.notificationService.notificatTx(DesktopHDMKeychainPlaceHolder, tx, txNotificationType,
-                deltaBalance);
+                                                    deltaBalance);
     }
 
 
@@ -836,12 +835,12 @@ public class DesktopHDMKeychain extends AbstractHD {
 
     private int allGeneratedInternalAddressCount() {
         return AbstractDb.desktopTxProvider.allGeneratedAddressCount(PathType
-                .INTERNAL_ROOT_PATH);
+                                                                             .INTERNAL_ROOT_PATH);
     }
 
     private int allGeneratedExternalAddressCount() {
         return AbstractDb.desktopTxProvider.allGeneratedAddressCount(PathType
-                .EXTERNAL_ROOT_PATH);
+                                                                             .EXTERNAL_ROOT_PATH);
     }
 
     public String getMasterPubKeyExtendedStr(CharSequence password) {

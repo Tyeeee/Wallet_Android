@@ -1,7 +1,8 @@
-package com.yjt.wallet.ecc;
+package com.yjt.wallet.core.ecc;
 
 import org.spongycastle.crypto.digests.RIPEMD160Digest;
 import org.spongycastle.util.Arrays;
+import org.spongycastle.util.encoders.Hex;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,17 +11,16 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-import javax.xml.bind.DatatypeConverter;
-
 import static java.util.Arrays.copyOfRange;
 
 public class BtcAddressGen {
 
-    public static void genBitcoinAddress(String publicKey) throws InvalidAlgorithmParameterException, NoSuchProviderException, NoSuchAlgorithmException, IOException {
+    public static String genBitcoinAddress(String publicKey) throws InvalidAlgorithmParameterException, NoSuchProviderException, NoSuchAlgorithmException, IOException {
         //Convert public key into byte array and prepend 0x04 byte to front
-        byte[] pubKeyBytes = DatatypeConverter.parseHexBinary("04" + publicKey);
+//        byte[] publicKeyBytes = DatatypeConverter.parseHexBinary("04" + publicKey);
+        byte[] publicKeyBytes = Hex.decode(publicKey);
         //Perform sha256 hash first
-        byte[] shaHashedKey = sha256Hash(pubKeyBytes);
+        byte[] shaHashedKey = sha256Hash(publicKeyBytes);
         //Perform RIPEMD-160 hash on result
         byte[] ripemdHashedKey = ripeMD160Hash(shaHashedKey);
         //Append 0x00 as main network identifier
@@ -36,7 +36,7 @@ public class BtcAddressGen {
         addrStream.write(checksum);
         byte[] binaryAddress = addrStream.toByteArray();
         //Encode in base58check and print
-        System.out.println("Bitcoin address: " + encodeBase58(binaryAddress));
+        return encodeBase58(binaryAddress);
     }
 
 

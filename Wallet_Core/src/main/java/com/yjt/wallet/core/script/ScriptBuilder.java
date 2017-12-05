@@ -94,7 +94,7 @@ public class ScriptBuilder {
     /**
      * Creates a scriptPubKey that encodes payment to the given address.
      */
-    public static Script createOutputScript(String to) {
+    public static Script createOutputScript(String to) throws AddressFormatException {
         if (Utils.getAddressHeader(to) == BitherjSettings.p2shHeader) {
             // ScriptOpCodes.OP_HASH160 <scriptHash> ScriptOpCodes.OP_EQUAL
             return new ScriptBuilder()

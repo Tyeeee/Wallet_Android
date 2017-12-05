@@ -10,11 +10,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner rootProject.ext.testInstrumentationRunner
-        externalNativeBuild {
-            cmake {
-                cppFlags "-frtti -fexceptions"
-            }
-        }
     }
     buildTypes {
         debug {
@@ -46,10 +41,8 @@ android {
 //        abortOnError true
         abortOnError false
     }
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
-        }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
 

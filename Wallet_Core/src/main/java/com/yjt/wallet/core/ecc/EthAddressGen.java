@@ -1,18 +1,18 @@
-package com.yjt.wallet.ecc;
+package com.yjt.wallet.core.ecc;
 
 import org.spongycastle.jcajce.provider.digest.Keccak;
+import org.spongycastle.util.encoders.Hex;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-import javax.xml.bind.DatatypeConverter;
-
 public class EthAddressGen {
 
     public static void genEthereumAddress(String publicKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
         //Convert public key into a byte array to use in hash function
-        byte[] publicKeyBytes = DatatypeConverter.parseHexBinary(publicKey);
+//        byte[] publicKeyBytes = DatatypeConverter.parseHexBinary(publicKey);
+        byte[] publicKeyBytes = Hex.decode(publicKey);
         String hashedPublicKey = getAddress(publicKeyBytes);
         //Take only last 40 characters of hash as the address
         String address = hashedPublicKey.substring(hashedPublicKey.length() - 40);

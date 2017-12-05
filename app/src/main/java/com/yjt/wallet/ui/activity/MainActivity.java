@@ -45,6 +45,7 @@ public class MainActivity extends ActivityViewImplement<MainContract.Presenter> 
 
     @Override
     protected void initialize(Bundle savedInstanceState) {
+        mainPresenter = new MainPresenter(this, this);
         showPromptDialog(R.string.dialog_prompt_wallet, false, false, Constant.RequestCode.DIALOG_PROGRESS_WALLET);
     }
 

@@ -12,5 +12,6 @@ public interface ECCTestContract {
 
     interface Presenter extends BasePresenter {
 
+        void getSecurityProviders();
     }
 }

@@ -18,6 +18,7 @@ package com.yjt.wallet.core;
 
 import com.yjt.wallet.core.contant.BitherjSettings;
 import com.yjt.wallet.core.crypto.ECKey;
+import com.yjt.wallet.core.exception.AddressFormatException;
 import com.yjt.wallet.core.exception.ProtocolException;
 import com.yjt.wallet.core.exception.ScriptException;
 import com.yjt.wallet.core.message.Message;
@@ -73,7 +74,7 @@ public class Out extends Message {
         this.txHash = this.tx.getTxHash();
     }
 
-    public Out(Tx parent, long value, String to) {
+    public Out(Tx parent, long value, String to) throws AddressFormatException {
         this(parent, value, ScriptBuilder.createOutputScript(to).getProgram());
     }
 
