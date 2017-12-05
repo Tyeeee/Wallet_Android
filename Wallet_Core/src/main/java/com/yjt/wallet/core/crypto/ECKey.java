@@ -699,7 +699,7 @@ public class ECKey implements Serializable {
     public static ECKey signedMessageToKey(byte[] messageBytes, byte[] signatureEncoded) throws SignatureException {
         // Parse the signature bytes into r/s and the selector value.
         if (signatureEncoded.length < 65)
-            throw new SignatureException("Signature truncated, expected 65 bytes and got " + signatureEncoded.length);
+            throw new SignatureException("ECSignature truncated, expected 65 bytes and got " + signatureEncoded.length);
         int header = signatureEncoded[0] & 0xFF;
         // The header byte: 0x1B = first key with even y, 0x1C = first key with odd y,
         //                  0x1D = second key with even y, 0x1E = second key with odd y
@@ -730,7 +730,7 @@ public class ECKey implements Serializable {
     public void verifyMessage(String message, String signatureBase64) throws SignatureException {
         ECKey key = ECKey.signedMessageToKey(message, signatureBase64);
         if (!Arrays.equals(key.getPubKey(), pub))
-            throw new SignatureException("Signature did not match for message");
+            throw new SignatureException("ECSignature did not match for message");
     }
 
 

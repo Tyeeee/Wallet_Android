@@ -7,7 +7,6 @@ import org.spongycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.spongycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.math.ec.ECPoint;
-import org.spongycastle.util.encoders.Hex;
 
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -23,12 +22,12 @@ import javax.annotation.Nullable;
 
 /**
  * ECC加密过程：
- * K = k * G， 大K是公钥，小k是私钥；
+ * K(公钥) = k(私钥) * G(基点);
  * 把明文编码成曲线上的点M；
  * 生成一个随机数r；
- * 计算密文C1=M + r*K, C2 = r*G，其中大K是公钥；
- * 对方收到密文后，可以计算C1 - kC2 = M，其中小k是私钥；
- * 攻击者得到C1、 C2，公钥K以及基点G，没有私钥是无法计算出M的。
+ * 计算密文C1=M + r*K(公钥), C2 = r*G；
+ * 对方收到密文后，可以计算C1 - k(私钥)C2 = M；
+ * 攻击者得到C1、 C2，公钥K以及基点G，没有私钥无法计算出M。
  * 
  * 1.生成随机私钥
  * 2.椭圆曲线算公钥
@@ -58,12 +57,12 @@ public class ECKeyPair {
         }
     }
 
-    public String getPrivateKey() {
-        return Hex.toHexString(privateKey.toByteArray());
+    public BigInteger getPrivateKey() {
+        return privateKey;
     }
 
-    public String getPublicKey() {
-        return Hex.toHexString(publicKey);
+    public byte[] getPublicKey() {
+        return publicKey;
     }
 
     private static byte[] createPublicKey(BigInteger privateKey, boolean compressed) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {

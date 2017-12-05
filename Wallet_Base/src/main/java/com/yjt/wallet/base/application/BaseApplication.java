@@ -40,7 +40,6 @@ public class BaseApplication extends MultiDexApplication implements Application.
     private String encryptKey = Regex.NONE.getRegext();
 
     public String getEncryptKey() {
-        LogUtil.getInstance().print("encryptKey:" + encryptKey);
         return encryptKey;
     }
 
