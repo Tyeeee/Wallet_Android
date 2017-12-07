@@ -589,14 +589,14 @@ public class Utils {
      */
     public static byte[] formatMessageForSigning(String message) {
         try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bos.write(BITCOIN_SIGNED_MESSAGE_HEADER_BYTES.length);
-            bos.write(BITCOIN_SIGNED_MESSAGE_HEADER_BYTES);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            byteArrayOutputStream.write(BITCOIN_SIGNED_MESSAGE_HEADER_BYTES.length);
+            byteArrayOutputStream.write(BITCOIN_SIGNED_MESSAGE_HEADER_BYTES);
             byte[] messageBytes = message.getBytes(Charsets.UTF_8);
             VarInt size = new VarInt(messageBytes.length);
-            bos.write(size.encode());
-            bos.write(messageBytes);
-            return bos.toByteArray();
+            byteArrayOutputStream.write(size.encode());
+            byteArrayOutputStream.write(messageBytes);
+            return byteArrayOutputStream.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException(e);  // Cannot happen.
         }

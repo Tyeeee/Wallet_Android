@@ -1,5 +1,7 @@
 package com.yjt.wallet.core.ecc;
 
+import com.yjt.wallet.core.utils.Utils;
+
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;
 import org.spongycastle.crypto.params.ECDomainParameters;
@@ -46,15 +48,27 @@ public class ECKeyPair {
     private byte[] publicKey;
 
     private ECKeyPair(@Nullable BigInteger privateKey, @Nullable byte[] publicKey, boolean compressed) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        if (privateKey == null) {
-            throw new IllegalArgumentException("ECKey requires at least private or public key");
+        if (privateKey == null && publicKey == null) {
+            throw new IllegalArgumentException("ECKeyPair requires at least private or public key");
         }
         this.privateKey = privateKey;
         if (publicKey != null) {
             this.publicKey = publicKey;
         } else {
-            this.publicKey = createPublicKey(privateKey, compressed);
+            this.publicKey = generatePublicKey(privateKey, compressed);
         }
+    }
+    
+    public ECKeyPair(BigInteger privKey, BigInteger pubKey) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        this(privKey, Utils.bigIntegerToBytes(pubKey, 65));
+    }
+
+    private ECKeyPair(@Nullable BigInteger privateKey, @Nullable byte[] publicKey) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        this(privateKey, publicKey, false);
+    }
+
+    public ECKeyPair(@Nullable byte[] privateKey, @Nullable byte[] publicKey) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        this(privateKey == null ? null : new BigInteger(1, privateKey), publicKey);
     }
 
     public BigInteger getPrivateKey() {
@@ -65,7 +79,7 @@ public class ECKeyPair {
         return publicKey;
     }
 
-    private static byte[] createPublicKey(BigInteger privateKey, boolean compressed) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    private static byte[] generatePublicKey(BigInteger privateKey, boolean compressed) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         if (privateKey != null) {
             X9ECParameters x9ECParameters = SECNamedCurves.getByName("secp256k1");
             ECDomainParameters ecDomainParameters = new ECDomainParameters(x9ECParameters.getCurve(), x9ECParameters.getG(), x9ECParameters.getN(), x9ECParameters.getH());
@@ -75,7 +89,7 @@ public class ECKeyPair {
         return null;
     }
 
-    public static ECKeyPair createECKeyPair(boolean compressed) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    public static ECKeyPair generateECKeyPair(boolean compressed) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         //Add bouncy castle as key pair gen provider
 //        Security.addProvider(new BouncyCastleProvider());
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
@@ -88,7 +102,7 @@ public class ECKeyPair {
         return new ECKeyPair(((BCECPrivateKey) keyPair.getPrivate()).getD(), ((BCECPublicKey) keyPair.getPublic()).getQ().getEncoded(compressed), compressed);
     }
 
-    public static ECKeyPair createECKeyPair(BigInteger privateKey, boolean compressed) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    public static ECKeyPair generateECKeyPair(BigInteger privateKey, boolean compressed) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         return new ECKeyPair(privateKey, null, compressed);
     }
 }

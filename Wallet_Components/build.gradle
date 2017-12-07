@@ -48,10 +48,10 @@ dependencies {
     api deps.appcompat_v4
     api deps.appcompat_v7
     api deps.design
+    api deps.guava
     api deps.okhttp3
     api deps.okio
     api deps.fastjson
     api deps.glide
     api deps.JsBridge
-    api project(':Wallet_Core')
 }

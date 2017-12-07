@@ -40,5 +40,5 @@ dependencies {
     androidTestImplementation deps.runner
     androidTestImplementation deps.espresso_core
     api deps.multidex
-    api project(':Wallet_Components')
+    api project(':Wallet_Core')
 }

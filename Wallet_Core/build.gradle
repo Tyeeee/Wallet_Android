@@ -46,7 +46,6 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.runner
     androidTestImplementation deps.espresso_core
-    api deps.guava
     api deps.spongycastle_core
     api deps.spongycastle_prov
     api deps.spongycastle_pg
@@ -64,4 +63,5 @@ dependencies {
     implementation 'org.apache.httpcomponents:httpmime:4.1@jar'
     implementation 'org.apache.httpcomponents:httpcore:4.4.1@jar'
     implementation 'org.apache.james:apache-mime4j-core:0.7.1@jar'
+    api project(':Wallet_Components')
 }
