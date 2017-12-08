@@ -30,29 +30,34 @@ import java.util.Arrays;
 
 public class ECSignature {
 
-    private static final ECDomainParameters ecDomainParameters;
-    private BigInteger r;
-    private BigInteger s;
+
+    private static ECSignature eCSignature;
+    private static ECDomainParameters ecDomainParameters;
 
     static {
         X9ECParameters params = SECNamedCurves.getByName("secp256k1");
         ecDomainParameters = new ECDomainParameters(params.getCurve(), params.getG(), params.getN(), params.getH());
     }
 
-    private ECSignature(BigInteger r, BigInteger s) {
-        this.r = r;
-        this.s = s;
+    private ECSignature() {
+        // cannot be instantiated
     }
 
-    public BigInteger getR() {
-        return r;
+    public static synchronized ECSignature getInstance() {
+        if (eCSignature == null) {
+            eCSignature = new ECSignature();
+        }
+        return eCSignature;
     }
 
-    public BigInteger getS() {
-        return s;
+    public static void releaseInstance() {
+        if (eCSignature != null) {
+            eCSignature = null;
+        }
+        ecDomainParameters = null;
     }
 
-    public static ECSignature generateSignature(BigInteger privateKey, Sha256Hash sha256Hash, boolean isRandom) {
+    public ECKey.ECDSASignature generateSignature(BigInteger privateKey, String data, boolean isRandom) {
         if (privateKey != null) {
             ECDSASigner ecdsaSigner;
             LogUtil.getInstance().print(String.format("Signature random: %s", isRandom));
@@ -63,16 +68,21 @@ public class ECSignature {
             }
             ECPrivateKeyParameters ecPrivateKeyParameters = new ECPrivateKeyParameters(privateKey, ecDomainParameters);
             ecdsaSigner.init(true, ecPrivateKeyParameters);
-            BigInteger[] bigIntegers = ecdsaSigner.generateSignature(sha256Hash.getBytes());
-            final ECKey.ECDSASignature ecdsaSignature = new ECKey.ECDSASignature(bigIntegers[0], bigIntegers[1]);
+//            Sha256Hash sha256Hash = Sha256Hash.create(Utils.formatMessageForSigning(data));
+            LogUtil.getInstance().print(String.format("Signature Data: %s", data));
+            LogUtil.getInstance().print(String.format("Signature Hashed Data: %s", Hex.toHexString(Sha256Hash.create(data.getBytes()).getBytes())));
+            BigInteger[] bigIntegers = ecdsaSigner.generateSignature(Sha256Hash.create(data.getBytes()).getBytes());
+            LogUtil.getInstance().print(String.format("Signature[r]: %s", Hex.toHexString(bigIntegers[0].toByteArray())));
+            LogUtil.getInstance().print(String.format("Signature[s]: %s", Hex.toHexString(bigIntegers[1].toByteArray())));
+            ECKey.ECDSASignature ecdsaSignature = new ECKey.ECDSASignature(bigIntegers[0], bigIntegers[1]);
             ecdsaSignature.ensureCanonical();
-            return new ECSignature(ecdsaSignature.r, ecdsaSignature.s);
+            return ecdsaSignature;
         } else {
             throw new KeyCrypterException("This ECKey does not have the private key necessary for signing.");
         }
     }
 
-    public static boolean verifySignature(Sha256Hash sha256Hash, BigInteger r, BigInteger s, byte[] pubicKey) {
+    public boolean verifySignature(Sha256Hash sha256Hash, BigInteger r, BigInteger s, byte[] pubicKey) {
         try {
             ECDSASigner ecdsaSigner = new ECDSASigner();
             ECPublicKeyParameters ecPublicKeyParameters = new ECPublicKeyParameters(ecDomainParameters.getCurve().decodePoint(pubicKey), ecDomainParameters);
@@ -84,39 +94,15 @@ public class ECSignature {
         }
     }
 
-    public static String generateSignature(BigInteger privateKey, byte[] publicKey, String data, boolean compressed, boolean isRandom) throws KeyCrypterException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+    public byte[] generateSignature(BigInteger privateKey, byte[] publicKey, String data, boolean compressed, boolean isRandom) throws KeyCrypterException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         if (privateKey != null) {
-            ECDSASigner ecdsaSigner;
-            LogUtil.getInstance().print(String.format("Signature random: %s", isRandom));
-            if (isRandom) {
-                ecdsaSigner = new ECDSASigner();
-            } else {
-                ecdsaSigner = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
-            }
-            ECPrivateKeyParameters ecPrivateKeyParameters = new ECPrivateKeyParameters(privateKey, ecDomainParameters);
-            ecdsaSigner.init(true, ecPrivateKeyParameters);
-            if(isRandom){
-                ECDomainParameters ecDomainParameters = ecPrivateKeyParameters.getParameters();
-                LogUtil.getInstance().print(String.format("Random Parameters[N]: %s", ecDomainParameters.getN()));
-            }else{
-                ECDomainParameters ecDomainParameters = ecPrivateKeyParameters.getParameters();
-                LogUtil.getInstance().print(String.format("HMac Parameters[N]: %s", ecDomainParameters.getN()));
-                LogUtil.getInstance().print(String.format("HMac Parameters[D]: %s", ecPrivateKeyParameters.getD()));
-            }
-//            Sha256Hash sha256Hash = Sha256Hash.create(Utils.formatMessageForSigning(data));
-            Sha256Hash sha256Hash = Sha256Hash.create(data.getBytes());
-            LogUtil.getInstance().print(String.format("Signature Data: %s", data));
-            LogUtil.getInstance().print(String.format("Signature Hashed Data: %s", Hex.toHexString(sha256Hash.getBytes())));
-            BigInteger[] bigIntegers = ecdsaSigner.generateSignature(sha256Hash.getBytes());
-            LogUtil.getInstance().print(String.format("Signature[r]: %s", Hex.toHexString(bigIntegers[0].toByteArray())));
-            LogUtil.getInstance().print(String.format("Signature[s]: %s", Hex.toHexString(bigIntegers[1].toByteArray())));
-            final ECKey.ECDSASignature ecdsaSignature = new ECKey.ECDSASignature(bigIntegers[0], bigIntegers[1]);
-            ecdsaSignature.ensureCanonical();
+            ECKey.ECDSASignature ecdsaSignature = generateSignature(privateKey, data, isRandom);
             int recoverId = -1;
             for (int i = 0; i < 4; i++) {
-                ECKeyPair ecKeyPair = recoverFromSignature(i, ecdsaSignature, sha256Hash, compressed);
-                if(ecKeyPair != null){
-                    LogUtil.getInstance().print(String.format("PublicKey[%s]: %s", i, Hex.toHexString(ecKeyPair.getPublicKey())));
+                ECKeyPair ecKeyPair = recoverFromSignature(i, ecdsaSignature, Sha256Hash.create(data.getBytes()), compressed);
+                if (ecKeyPair != null) {
+                    LogUtil.getInstance().print(String.format("Public Key[%s]: %s", i + 1, Hex.toHexString(ecKeyPair.getPublicKey())));
+                    LogUtil.getInstance().print(String.format("Public Key: %s", Hex.toHexString(publicKey)));
                     if (Arrays.equals(ecKeyPair.getPublicKey(), publicKey)) {
                         recoverId = i;
                         break;
@@ -131,8 +117,7 @@ public class ECSignature {
                 signature[0] = (byte) header;
                 System.arraycopy(Utils.bigIntegerToBytes(ecdsaSignature.r, 32), 0, signature, 1, 32);
                 System.arraycopy(Utils.bigIntegerToBytes(ecdsaSignature.s, 32), 0, signature, 33, 32);
-//                return new String(Base64.encode(sigData), Charset.forName(Charsets.UTF_8.name()));
-                return Hex.toHexString(signature);
+                return signature;
             } else {
                 throw new RuntimeException("Could not construct a recoverable key. This should never happen.");
             }
@@ -141,13 +126,14 @@ public class ECSignature {
         }
     }
 
-    private static ECKeyPair generateSignature(String data, String signature) throws SignatureException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        byte[] bytes;
-        bytes = Hex.decode(signature);
+    private ECKeyPair generateSignature(String data, String signature) throws SignatureException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        LogUtil.getInstance().print(String.format("Signature: %s", signature));
+        byte[] bytes = Hex.decode(signature);
         if (bytes.length < 65) {
             throw new SignatureException("Signature truncated, expected 65 bytes and got " + bytes.length);
         }
         int header = bytes[0] & 0xFF;
+        LogUtil.getInstance().print(String.format("Header: %s", header));
         if (header < 27 || header > 34) {
             throw new SignatureException("Header byte out of range: " + header);
         }
@@ -161,35 +147,35 @@ public class ECSignature {
             compressed = true;
             header -= 4;
         }
-        int recId = header - 27;
-        ECKeyPair ecKeyPair = recoverFromSignature(recId, ecdsaSignature, sha256Hash, compressed);
+        int recoverId = header - 27;
+        ECKeyPair ecKeyPair = recoverFromSignature(recoverId, ecdsaSignature, sha256Hash, compressed);
         if (ecKeyPair == null) {
             throw new SignatureException("Could not recover public key from signature");
         }
         return ecKeyPair;
     }
 
-    public static boolean verifySignature(String data, String signature, byte[] publicKey) throws SignatureException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+    public boolean verifySignature(String data, String signature, byte[] publicKey) throws SignatureException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         ECKeyPair ecKeyPair = generateSignature(data, signature);
-        if (Arrays.equals(ecKeyPair.getPublicKey(), publicKey)) {
-            return true;
-        } else {
-            return false;
-        }
+        return ecKeyPair != null && Arrays.equals(ecKeyPair.getPublicKey(), publicKey);
     }
 
-    private static ECKeyPair recoverFromSignature(int recoverId, ECKey.ECDSASignature ecdsaSignature, Sha256Hash sha256Hash, boolean compressed) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        Preconditions.checkArgument(recoverId >= 0, "recId must be positive");
+    private ECKeyPair recoverFromSignature(int recoverId, ECKey.ECDSASignature ecdsaSignature, Sha256Hash sha256Hash, boolean compressed) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        Preconditions.checkArgument(recoverId >= 0, "recoverId must be positive");
         Preconditions.checkArgument(ecdsaSignature.r.compareTo(BigInteger.ZERO) >= 0, "r must be positive");
         Preconditions.checkArgument(ecdsaSignature.s.compareTo(BigInteger.ZERO) >= 0, "s must be positive");
         Preconditions.checkNotNull(sha256Hash);
         //1.1 x = (n * i) + r
         BigInteger n = ecDomainParameters.getN();
-        BigInteger i = BigInteger.valueOf((long) recoverId / 2);
+        LogUtil.getInstance().print(String.format("Parameters[N]: %s", n));
+        BigInteger i = BigInteger.valueOf((long) recoverId / 2L);
+        LogUtil.getInstance().print(String.format("Parameters[i]: %s", i));
         BigInteger x = ecdsaSignature.r.add(i.multiply(n));
+        LogUtil.getInstance().print(String.format("Parameters[x]: %s", x));
         //1.2&1.3convert 02<Rx> to point R. (step 1.2 and 1.3)
         ECCurve.Fp fp = (ECCurve.Fp) ecDomainParameters.getCurve();
         BigInteger prime = fp.getQ();
+        LogUtil.getInstance().print(String.format("Parameters[Q]: %s", prime.toString(16)));
         if (x.compareTo(prime) >= 0) {
             return null;
         } else {
@@ -200,24 +186,34 @@ public class ECSignature {
             } else {
                 //1.5 calculate e from message using the same algorithm as ecdsa signature calculation.
                 BigInteger e = sha256Hash.toBigInteger();
+                LogUtil.getInstance().print(String.format("Parameters[e]: %s", e.toString(16)));
                 //1.6 We calculate the two terms sR and eG separately multiplied by the inverse of r (from the signature). We then add them to calculate Q = r^-1(sR-eG)
                 BigInteger eInv = BigInteger.ZERO.subtract(e).mod(n);
+                LogUtil.getInstance().print(String.format("Parameters[eInv]: %s", eInv.toString(16)));
                 BigInteger rInv = ecdsaSignature.r.modInverse(n);
+                LogUtil.getInstance().print(String.format("Parameters[rInv]: %s", rInv.toString(16)));
                 BigInteger srInv = rInv.multiply(ecdsaSignature.s).mod(n);
+                LogUtil.getInstance().print(String.format("Parameters[srInv]: %s", srInv.toString(16)));
                 BigInteger eInvrInv = rInv.multiply(eInv).mod(n);
+                LogUtil.getInstance().print(String.format("Parameters[eInvrInv]: %s", eInvrInv.toString(16)));
                 ECPoint.Fp q = (ECPoint.Fp) ECAlgorithms.sumOfTwoMultiplies(ecDomainParameters.getG(), eInvrInv, R, srInv);
-                if (compressed) {
-                    q = new ECPoint.Fp(fp, q.getX(), q.getY(), true);
-                }
-                return new ECKeyPair(null, q.getEncoded());
+                LogUtil.getInstance().print(String.format("ECPoint[X]: %s", Hex.toHexString(q.getX().getEncoded())));
+                LogUtil.getInstance().print(String.format("ECPoint[Y]: %s", Hex.toHexString(q.getY().getEncoded())));
+                LogUtil.getInstance().print(String.format("compressed: %s", compressed));
+                byte[] publicKey = new ECPoint.Fp(fp, q.getX(), q.getY(), compressed).getEncoded();
+                LogUtil.getInstance().print(String.format("Public Key: %s", Hex.toHexString(publicKey)));
+                return new ECKeyPair(null, publicKey, compressed);
             }
         }
     }
 
-    private static ECPoint decompressPoint(BigInteger xBN, boolean yBit) {
+    private ECPoint decompressPoint(BigInteger xBN, boolean yBit) {
         X9IntegerConverter x9IntegerConverter = new X9IntegerConverter();
         byte[] compressEncode = x9IntegerConverter.integerToBytes(xBN, 1 + x9IntegerConverter.getByteLength(ecDomainParameters.getCurve()));
+        LogUtil.getInstance().print(String.format("Parameters[xBN]: %s", xBN));
+        LogUtil.getInstance().print(String.format("Parameters[yBit]: %s", yBit));
         compressEncode[0] = (byte) (yBit ? 0x03 : 0x02);
+        LogUtil.getInstance().print(String.format("Compress Encode: %s", Hex.toHexString(compressEncode)));
         return ecDomainParameters.getCurve().decodePoint(compressEncode);
     }
 }

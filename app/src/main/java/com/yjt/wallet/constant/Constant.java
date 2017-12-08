@@ -35,12 +35,6 @@ public final class Constant {
         public static final String SAVE_CACHE_DATE = "save_cache";
     }
 
-    public final static class SmsVerificationCode {
-        public static final String REGISTER_SMS = "1";
-        public static final long MILLIS_IN_FUTURE = 60000;
-        public static final long COUNT_DOWN_INTERVAL = 1000;
-    }
-
     public static class Tab {
         public static final int HOME_PAGE = 0;
         public final static int SERVICE = 1;
@@ -71,5 +65,10 @@ public final class Constant {
         public static final int DATA_ERROR = 0x7014;
         public static final int FOOTER_VIEW_ID = 0x7015;
         public static final int DATA_SIZE = 10;
+    }
+
+    public static class StateCode {
+        public static final int TEST_SUCCESS = 0x8001;
+        public static final int TEST_FAILED = 0x8002;
     }
 }

@@ -7,6 +7,20 @@
     android:orientation="vertical"
     tools:context="com.yjt.wallet.ui.activity.ECCTestActivity">
 
+    <EditText
+        android:id="@+id/etData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"/>
+
+    <Button
+        android:id="@+id/btnTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="Test"
+    />
+
     <TextView
         android:id="@+id/tvPrivateKey"
         android:layout_width="wrap_content"
@@ -20,7 +34,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"/>
 
-
     <TextView
         android:id="@+id/tvAddress"
         android:layout_width="wrap_content"
@@ -29,6 +42,12 @@
 
     <TextView
         android:id="@+id/tvSignature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:id="@+id/tvSignatureResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"/>

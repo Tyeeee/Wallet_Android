@@ -1,7 +1,5 @@
 package com.yjt.wallet.core.ecc;
 
-import com.yjt.wallet.core.utils.Utils;
-
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;
 import org.spongycastle.crypto.params.ECDomainParameters;
@@ -30,7 +28,7 @@ import javax.annotation.Nullable;
  * 计算密文C1=M + r*K(公钥), C2 = r*G；
  * 对方收到密文后，可以计算C1 - k(私钥)C2 = M；
  * 攻击者得到C1、 C2，公钥K以及基点G，没有私钥无法计算出M。
- * 
+ * <p>
  * 1.生成随机私钥
  * 2.椭圆曲线算公钥
  * 3.计算公钥的SHA-256哈希值
@@ -58,17 +56,17 @@ public class ECKeyPair {
             this.publicKey = generatePublicKey(privateKey, compressed);
         }
     }
-    
-    public ECKeyPair(BigInteger privKey, BigInteger pubKey) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        this(privKey, Utils.bigIntegerToBytes(pubKey, 65));
-    }
 
     private ECKeyPair(@Nullable BigInteger privateKey, @Nullable byte[] publicKey) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         this(privateKey, publicKey, false);
     }
 
-    public ECKeyPair(@Nullable byte[] privateKey, @Nullable byte[] publicKey) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        this(privateKey == null ? null : new BigInteger(1, privateKey), publicKey);
+//    public ECKeyPair(BigInteger privateKey, BigInteger publicKey, boolean compressed) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+//        this(privateKey, Utils.bigIntegerToBytes(publicKey, 65), compressed);
+//    }
+
+    public ECKeyPair(@Nullable byte[] privateKey, @Nullable byte[] publicKey, boolean compressed) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        this(privateKey == null ? null : new BigInteger(1, privateKey), publicKey, compressed);
     }
 
     public BigInteger getPrivateKey() {
